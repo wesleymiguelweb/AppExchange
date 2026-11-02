@@ -1,0 +1,95 @@
+.figure {
+  position: relative;
+  width: 100%;
+  margin: 0;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+.chart:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.grid {
+  stroke: rgba(23, 43, 36, 0.08);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.axisLabel {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  fill: var(--ink-45);
+  font-variant-numeric: tabular-nums;
+}
+
+.area {
+  fill: rgba(23, 95, 73, 0.09);
+  stroke: none;
+}
+
+.line {
+  fill: none;
+  stroke: var(--forest);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.lastDot {
+  fill: var(--white);
+  stroke: var(--forest);
+  stroke-width: 2.5;
+}
+
+.crosshair {
+  stroke: rgba(23, 43, 36, 0.28);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.cursorDot {
+  fill: var(--forest);
+  stroke: var(--white);
+  stroke-width: 2.5;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  box-shadow: 0 12px 28px -18px rgba(23, 43, 36, 0.5);
+  transform: translateX(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.tooltipDate {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-45);
+}
+
+.tooltipValue {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
