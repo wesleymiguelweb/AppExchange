@@ -1,0 +1,234 @@
+.scroller {
+  overflow: auto;
+  max-height: 560px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0 var(--space-4);
+  background: var(--paper);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-45);
+  white-space: nowrap;
+}
+
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.sortButton:hover {
+  color: var(--ink);
+}
+
+.sortActive {
+  color: var(--ink);
+}
+
+.sortIcon {
+  font-size: 11px;
+  color: var(--ink-45);
+}
+
+.sortActive .sortIcon {
+  color: var(--forest);
+}
+
+tbody th,
+tbody td {
+  padding: 12px var(--space-4);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr {
+  transition: background-color var(--transition);
+}
+
+tbody tr:hover {
+  background: rgba(23, 43, 36, 0.025);
+}
+
+.selectedRow {
+  background: rgba(221, 236, 229, 0.45);
+}
+
+.selectedRow:hover {
+  background: rgba(221, 236, 229, 0.65);
+}
+
+.codeCell {
+  text-align: left;
+  font-weight: 600;
+}
+
+.code {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.selectedRow .code {
+  border-color: rgba(23, 95, 73, 0.28);
+  background: var(--white);
+  color: var(--forest-dark);
+}
+
+.nameCell {
+  color: var(--ink-70);
+}
+
+.numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.actionColumn {
+  width: 128px;
+}
+
+.actionCell {
+  text-align: right;
+}
+
+.actionCell button {
+  gap: 6px;
+}
+
+.selectedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--forest-dark);
+}
+
+.footnote {
+  padding: 10px var(--space-4);
+  background: var(--paper);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--ink-45);
+}
+
+@media (max-width: 760px) {
+  .scroller {
+    overflow: visible;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .table,
+  .table thead,
+  .table tbody,
+  .table tr,
+  .table th,
+  .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px var(--space-3);
+    margin-bottom: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--white);
+  }
+
+  .table tbody th,
+  .table tbody td {
+    min-width: 0;
+    padding: 4px 0;
+    border: 0;
+    text-align: left;
+  }
+
+  .table .numeric {
+    white-space: normal;
+  }
+
+  .codeCell {
+    grid-column: 1;
+  }
+
+  .nameCell {
+    grid-column: 1;
+  }
+
+  .nameCell::before,
+  .numeric::before {
+    content: attr(data-label);
+    display: inline-block;
+    margin-right: var(--space-2);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-45);
+  }
+
+  .numeric {
+    grid-column: 1;
+  }
+
+  .actionCell {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    text-align: right;
+  }
+
+  .actionCell::before {
+    content: none;
+  }
+
+  .footnote {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+}
