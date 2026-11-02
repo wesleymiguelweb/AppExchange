@@ -3,18 +3,19 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Conversor de moedas e análise histórica de câmbio com dados da Frankfurter (BCE).",
+  "description": "Conversor de moedas e análise histórica de câmbio com dados de referência do Banco Central Europeu (Frankfurter).",
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
     "prop-types": "^15.8.1",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "tailwindcss": "^4.3.3"
+    "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.0",
