@@ -26,6 +26,12 @@ export function createFormatters(locale) {
 
   const integer = new Intl.NumberFormat(safe, { maximumFractionDigits: 0 });
 
+  const compactCache = new Map();
+  const quantity = new Intl.NumberFormat(safe, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 4,
+  });
+
   const percent = new Intl.NumberFormat(safe, {
     style: 'percent',
     minimumFractionDigits: 2,
@@ -75,6 +81,40 @@ export function createFormatters(locale) {
         );
       }
       return moneyCache.get(currency).format(value);
+    },
+
+    /** Valor monetário compacto para eixos (R$ 12,4 mil). */
+    formatMoneyCompact(value, currency) {
+      if (!Number.isFinite(value) || !currency) return EMPTY;
+      if (!compactCache.has(currency)) {
+        compactCache.set(
+          currency,
+          new Intl.NumberFormat(safe, {
+            style: 'currency',
+            currency,
+            notation: 'compact',
+            maximumFractionDigits: 1,
+          }),
+        );
+      }
+      return compactCache.get(currency).format(value);
+    },
+
+    /** Quantidade de uma posição, com até 4 casas e sem zeros à direita. */
+    formatQuantity(value) {
+      if (!Number.isFinite(value)) return EMPTY;
+      return quantity.format(value);
+    },
+
+    /** Número com sinal explícito (para resultados). */
+    formatSigned(value, digits = 2) {
+      if (!Number.isFinite(value)) return EMPTY;
+      const formatter = new Intl.NumberFormat(safe, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+        signDisplay: 'exceptZero',
+      });
+      return formatter.format(value);
     },
 
     /** Taxa de câmbio: mais casas quando o valor é pequeno (0,18701). */

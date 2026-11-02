@@ -48,7 +48,7 @@
   outline: none;
   border-color: var(--forest);
   background: var(--white);
-  box-shadow: 0 0 0 3px rgba(23, 95, 73, 0.12);
+  box-shadow: 0 0 0 3px var(--brand-soft);
 }
 
 .search::-webkit-search-cancel-button {

@@ -1,0 +1,51 @@
+.group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--panel-2);
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--faint);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background-color var(--transition),
+    color var(--transition);
+}
+
+.option:hover {
+  color: var(--text);
+  background: var(--hover-bg);
+}
+
+.active,
+.active:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.sm .option {
+  min-height: 27px;
+  padding: 0 10px;
+  font-size: 11.5px;
+}
+
+@media (max-width: 640px) {
+  .group {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}

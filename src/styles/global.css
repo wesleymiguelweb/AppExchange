@@ -1,3 +1,6 @@
+/* Ordem das camadas: resets ficam abaixo dos componentes e utilitários. */
+@layer theme, base, components, utilities;
+
 *,
 *::before,
 *::after {
@@ -12,8 +15,8 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-sans);
   font-size: 15px;
   line-height: 1.55;
@@ -22,46 +25,54 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-h1,
-h2,
-h3,
-p,
-figure {
-  margin: 0;
-}
+/*
+ * Resets em @layer base para que os utilitários do Tailwind possam vencer por
+ * camada. Os CSS Modules continuam sem camada e, portanto, continuam mandando
+ * no legado.
+ */
+@layer base {
+  h1,
+  h2,
+  h3,
+  p,
+  figure {
+    margin: 0;
+  }
 
-ul,
-ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
 
-button,
-input,
-select,
-output {
-  font: inherit;
-  color: inherit;
-}
+  button,
+  input,
+  select,
+  output,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
 
-button {
-  cursor: pointer;
-}
+  button {
+    cursor: pointer;
+  }
 
-a {
-  color: inherit;
+  a {
+    color: inherit;
+  }
 }
 
 :focus-visible {
-  outline: 2px solid var(--forest);
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 ::selection {
-  background: var(--accent);
-  color: var(--ink);
+  background: var(--brand);
+  color: var(--brand-contrast);
 }
 
 /* Conteúdo visível apenas para leitores de tela */
@@ -75,6 +86,28 @@ a {
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Scrollbars discretas no tema escuro (WebKit/Blink) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {

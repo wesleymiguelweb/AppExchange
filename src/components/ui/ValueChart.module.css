@@ -1,0 +1,127 @@
+.figure {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+.chart:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.grid {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.axisLabel {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  fill: var(--chart-axis);
+  font-variant-numeric: tabular-nums;
+}
+
+.line {
+  fill: none;
+  stroke: var(--chart-line);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.lastDot {
+  fill: var(--panel);
+  stroke: var(--chart-line);
+  stroke-width: 2.5;
+}
+
+.crosshair {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.cursorDot {
+  fill: var(--chart-line);
+  stroke: var(--panel);
+  stroke-width: 2;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 148px;
+  padding: 8px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--chart-tooltip-bg);
+  box-shadow: var(--chart-tooltip-shadow);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.tooltipDate {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.tooltipValue {
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 160px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-2);
+  color: var(--faint);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.empty {
+  border-style: dashed;
+}
+
+.shimmer {
+  width: 70%;
+  height: 46%;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, transparent, var(--hover-bg), transparent);
+  animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-60%);
+  }
+  to {
+    transform: translateX(60%);
+  }
+}

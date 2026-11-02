@@ -54,14 +54,14 @@
 
 /* Variantes — o guide define primária Ink, secundária outline e selecionada Accent */
 .primary {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: var(--ink);
+  background: var(--primary-bg);
+  color: var(--primary-text);
+  border-color: var(--primary-bg);
 }
 
 .primary:hover:not(:disabled) {
-  background: var(--ink-strong);
-  border-color: var(--ink-strong);
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
 .secondary {
@@ -96,6 +96,17 @@
   border-color: var(--border-strong);
 }
 
+.danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+
+.danger:hover:not(:disabled) {
+  background: var(--danger-strong);
+  border-color: var(--danger-strong);
+}
+
 .loading {
   position: relative;
   color: transparent;
@@ -112,7 +123,7 @@
   border: 2px solid currentColor;
   border-top-color: transparent;
   border-radius: 50%;
-  color: var(--paper);
+  color: var(--primary-text);
   animation: spin 700ms linear infinite;
 }
 

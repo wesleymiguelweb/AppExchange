@@ -1,0 +1,167 @@
+.page {
+  animation: pageIn 220ms ease-out;
+}
+
+.basePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.basePill svg {
+  color: var(--brand);
+}
+
+/* ---------- Quick pairs ---------- */
+
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+}
+
+.quickLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.quickLabel svg {
+  color: var(--brand);
+}
+
+.quickChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 27px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition:
+    color var(--transition),
+    border-color var(--transition),
+    background-color var(--transition);
+}
+
+.chip svg {
+  color: var(--faint);
+}
+
+.chip:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.chipActive {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.chipActive svg {
+  color: var(--brand);
+}
+
+.chipFrom,
+.chipTo {
+  letter-spacing: 0.03em;
+}
+
+.quickNote {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--faint);
+}
+
+/* ---------- Blocks ---------- */
+
+.converter,
+.chart,
+.rates {
+  margin-bottom: var(--space-4);
+}
+
+.converter > section,
+.chart > section,
+.rates > section {
+  height: 100%;
+}
+
+.footnote {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding-top: var(--space-2);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--faint);
+}
+
+.footnote svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--faint);
+}
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 760px) {
+  .quick {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .quickNote {
+    margin-left: 0;
+  }
+
+  .basePill {
+    font-size: 10.5px;
+  }
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

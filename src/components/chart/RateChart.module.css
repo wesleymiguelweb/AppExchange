@@ -19,7 +19,7 @@
 }
 
 .grid {
-  stroke: rgba(23, 43, 36, 0.08);
+  stroke: var(--chart-grid);
   stroke-width: 1;
   stroke-dasharray: 3 5;
   vector-effect: non-scaling-stroke;
@@ -33,7 +33,7 @@
 }
 
 .area {
-  fill: rgba(23, 95, 73, 0.09);
+  fill: var(--chart-fill);
   stroke: none;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .crosshair {
-  stroke: rgba(23, 43, 36, 0.28);
+  stroke: var(--chart-grid);
   stroke-width: 1;
   stroke-dasharray: 3 4;
   vector-effect: non-scaling-stroke;
@@ -74,8 +74,8 @@
   padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--white);
-  box-shadow: 0 12px 28px -18px rgba(23, 43, 36, 0.5);
+  background: var(--chart-tooltip-bg);
+  box-shadow: var(--chart-tooltip-shadow);
   transform: translateX(-50%);
   pointer-events: none;
   white-space: nowrap;

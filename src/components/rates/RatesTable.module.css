@@ -75,15 +75,15 @@ tbody tr {
 }
 
 tbody tr:hover {
-  background: rgba(23, 43, 36, 0.025);
+  background: var(--hover-bg);
 }
 
 .selectedRow {
-  background: rgba(221, 236, 229, 0.45);
+  background: var(--brand-soft);
 }
 
 .selectedRow:hover {
-  background: rgba(221, 236, 229, 0.65);
+  background: var(--brand-soft);
 }
 
 .codeCell {
@@ -103,9 +103,9 @@ tbody tr:hover {
 }
 
 .selectedRow .code {
-  border-color: rgba(23, 95, 73, 0.28);
+  border-color: var(--brand);
   background: var(--white);
-  color: var(--forest-dark);
+  color: var(--brand);
 }
 
 .nameCell {

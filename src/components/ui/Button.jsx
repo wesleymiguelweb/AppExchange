@@ -40,7 +40,7 @@ export default function Button({
 }
 
 Button.propTypes = {
-  variant: PropTypes.oneOf(['primary', 'secondary', 'ghost', 'quiet']),
+  variant: PropTypes.oneOf(['primary', 'secondary', 'ghost', 'quiet', 'danger']),
   size: PropTypes.oneOf(['sm', 'md', 'lg']),
   icon: PropTypes.string,
   iconRight: PropTypes.string,

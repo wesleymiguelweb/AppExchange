@@ -1,0 +1,191 @@
+{
+  "results": [
+    {
+      "name": "dados de câmbio carregados",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "dashboard: sem overflow horizontal",
+      "pass": true,
+      "detail": "{\"inner\":1440,\"scroll\":1440,\"body\":1440}"
+    },
+    {
+      "name": "dashboard: views inspecionáveis",
+      "pass": true,
+      "detail": "19 views"
+    },
+    {
+      "name": "portfolio: sem overflow horizontal",
+      "pass": true,
+      "detail": "{\"inner\":1440,\"scroll\":1440,\"body\":1440}"
+    },
+    {
+      "name": "portfolio: views inspecionáveis",
+      "pass": true,
+      "detail": "27 views"
+    },
+    {
+      "name": "markets: sem overflow horizontal",
+      "pass": true,
+      "detail": "{\"inner\":1440,\"scroll\":1440,\"body\":1440}"
+    },
+    {
+      "name": "markets: views inspecionáveis",
+      "pass": true,
+      "detail": "29 views"
+    },
+    {
+      "name": "trade: sem overflow horizontal",
+      "pass": true,
+      "detail": "{\"inner\":1440,\"scroll\":1440,\"body\":1440}"
+    },
+    {
+      "name": "trade: views inspecionáveis",
+      "pass": true,
+      "detail": "18 views"
+    },
+    {
+      "name": "settings: sem overflow horizontal",
+      "pass": true,
+      "detail": "{\"inner\":1440,\"scroll\":1440,\"body\":1440}"
+    },
+    {
+      "name": "settings: views inspecionáveis",
+      "pass": true,
+      "detail": "21 views"
+    },
+    {
+      "name": "support: sem overflow horizontal",
+      "pass": true,
+      "detail": "{\"inner\":1440,\"scroll\":1440,\"body\":1440}"
+    },
+    {
+      "name": "support: views inspecionáveis",
+      "pass": true,
+      "detail": "26 views"
+    },
+    {
+      "name": "topbar tem menu da carteira e menu do sistema",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "name": "menu da carteira resume patrimônio",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "menu da carteira lista posições",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Esc fecha o menu da carteira",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "fonte personalizável aplicada",
+      "pass": true,
+      "detail": "{\"attr\":\"manrope\",\"family\":\"Manrope, Inter, system-ui, -apple-system, \\\"Segoe UI\\\", Roboto, sans-serif\",\"stored\":\"\\\"manrope\\\"\"}"
+    },
+    {
+      "name": "tema claro aplicado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "tema escuro restaurado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "fonte persiste após reload",
+      "pass": true,
+      "detail": "manrope"
+    },
+    {
+      "name": "Ctrl+Shift+E ativa o inspetor",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "inspetor mostra id, componente e medidas",
+      "pass": true,
+      "detail": "Detalhes da view |  | portfolio.stat.value |  | ID | portfolio.stat.value | Copiar | COMPONENTE | article · article | DI"
+    },
+    {
+      "name": "botão copia o id da view",
+      "pass": true,
+      "detail": "Copiado"
+    },
+    {
+      "name": "clipboard contém o id",
+      "pass": true,
+      "detail": "portfolio.stat.value"
+    },
+    {
+      "name": "Ctrl+C copia o id selecionado",
+      "pass": true,
+      "detail": "Copiado"
+    },
+    {
+      "name": "View Finder filtra por id",
+      "pass": true,
+      "detail": "6"
+    },
+    {
+      "name": "Ctrl+Shift+E desativa o inspetor",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Ctrl+K abre a busca global",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "busca encontra USD",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "adiciona posição CHF",
+      "pass": true,
+      "detail": "5 -> 6"
+    },
+    {
+      "name": "remove posição CHF",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "esconde um painel",
+      "pass": true,
+      "detail": "5"
+    },
+    {
+      "name": "restaura o layout padrão",
+      "pass": true,
+      "detail": "6/6"
+    },
+    {
+      "name": "mobile: sem overflow horizontal",
+      "pass": true,
+      "detail": "{\"inner\":390,\"scroll\":390,\"body\":390}"
+    },
+    {
+      "name": "mobile: drawer de navegação abre",
+      "pass": true,
+      "detail": "{\"x\":0,\"width\":272}"
+    },
+    {
+      "name": "mobile: popover da carteira cabe na tela",
+      "pass": true,
+      "detail": "{\"left\":12,\"right\":378,\"width\":366}"
+    }
+  ],
+  "issues": [],
+  "failed": 0
+}

@@ -81,3 +81,36 @@ export async function getTimeSeries({ from, to, start, end, signal }) {
     points,
   };
 }
+
+/**
+ * GET /v1/{start}..{end}?base=BRL&symbols=USD,EUR,GBP
+ * Uma única chamada devolve a série de várias moedas — usado pela carteira,
+ * pelos sparklines do mercado e pelo gráfico de performance.
+ */
+export async function getTimeSeriesForSymbols({ base, symbols, start, end, signal }) {
+  const uniqueSymbols = [...new Set(symbols ?? [])].filter(
+    (code) => typeof code === 'string' && code.length === 3 && code !== base,
+  );
+
+  if (!base || !start || !end) {
+    throw new ApiError('Parâmetros insuficientes para a série histórica', { type: 'invalid' });
+  }
+
+  // Sem símbolos além da base não há série para buscar: a base vale 1 por definição.
+  if (uniqueSymbols.length === 0) {
+    return { startDate: start, endDate: end, base, rates: {} };
+  }
+
+  const data = await fetchJson(
+    buildUrl(`/${start}..${end}`, { base, symbols: uniqueSymbols.join(',') }),
+    { signal },
+  );
+  const rates = assertRates(data);
+
+  return {
+    startDate: typeof data.start_date === 'string' ? data.start_date : start,
+    endDate: typeof data.end_date === 'string' ? data.end_date : end,
+    base,
+    rates,
+  };
+}

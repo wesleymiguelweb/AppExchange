@@ -1,3 +1,5 @@
+import { riaTranslations } from './riaTranslations.js';
+
 export const DEFAULT_LOCALE = 'pt-BR';
 
 export const LOCALES = [
@@ -427,3 +429,27 @@ export const translations = {
 export function getPeriodNameKey(periodId) {
   return PERIOD_KEYS[periodId] ?? '30d';
 }
+
+/** Merge profundo: acrescenta os textos da RIA sem tocar nos existentes. */
+function mergeMessages(base, extra) {
+  if (!extra || typeof extra !== 'object' || Array.isArray(extra)) return base;
+  const output = { ...base };
+  Object.entries(extra).forEach(([key, value]) => {
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      base?.[key] &&
+      typeof base[key] === 'object'
+    ) {
+      output[key] = mergeMessages(base[key], value);
+    } else {
+      output[key] = value;
+    }
+  });
+  return output;
+}
+
+Object.keys(translations).forEach((locale) => {
+  translations[locale] = mergeMessages(translations[locale], riaTranslations[locale]);
+});

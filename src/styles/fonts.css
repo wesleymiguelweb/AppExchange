@@ -1,0 +1,27 @@
+/*
+ * Tipografia personalizável. A fonte escolhida troca apenas --font-sans no
+ * <html>, então todo o legado (que já usa a variável) acompanha sem mudanças.
+ */
+[data-font='inter'] {
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+[data-font='manrope'] {
+  --font-sans: 'Manrope', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+[data-font='sora'] {
+  --font-sans: 'Sora', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+[data-font='grotesk'] {
+  --font-sans: 'Space Grotesk', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+[data-font='plex'] {
+  --font-sans: 'IBM Plex Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+[data-font='outfit'] {
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}

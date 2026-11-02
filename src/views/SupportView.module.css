@@ -1,0 +1,390 @@
+.page {
+  animation: pageIn 220ms ease-out;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+  margin-bottom: var(--space-4);
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.card {
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--glass-highlight) 20%, transparent), transparent 120px),
+    color-mix(in srgb, var(--panel) 88%, transparent);
+  box-shadow: var(--shadow-card);
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.cardIcon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--brand);
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.cardSubtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--faint);
+}
+
+/* ---------- FAQ ---------- */
+
+.faqList {
+  margin-top: var(--space-2);
+}
+
+.faqItem {
+  border-bottom: 1px solid var(--line);
+}
+
+.faqItem:last-child {
+  border-bottom: 0;
+}
+
+.faqButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  padding: 14px 2px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted-strong);
+  transition: color var(--transition);
+}
+
+.faqButton:hover {
+  color: var(--text);
+}
+
+.faqOpen .faqButton {
+  color: var(--text);
+}
+
+.faqChevron {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--faint);
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+}
+
+.faqOpen .faqChevron {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.faqAnswer {
+  padding: 0 34px 14px 2px;
+}
+
+.faqAnswer p {
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--faint);
+}
+
+/* ---------- Atalhos ---------- */
+
+.shortcutList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--space-2);
+}
+
+.shortcutRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.shortcutRow:last-child {
+  border-bottom: 0;
+}
+
+.shortcutLabel {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--panel-2);
+  color: var(--muted-strong);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.keyAlt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 2px;
+  font-size: 9.5px;
+  color: var(--faint);
+}
+
+.shortcutActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- Sobre ---------- */
+
+.aboutText {
+  padding-top: var(--space-4);
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--faint);
+}
+
+.sourceBox {
+  margin-top: var(--space-4);
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-2);
+}
+
+.sourceBox strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.sourceBox p {
+  margin-top: 3px;
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: var(--faint);
+}
+
+.sourceLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.sourceLinks a,
+.sourceLinks button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--brand);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sourceLinks a:hover,
+.sourceLinks button:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Mapa ---------- */
+
+.mapWrap {
+  overflow-x: auto;
+  margin-top: var(--space-2);
+}
+
+.mapTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.mapTable thead th {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.mapTable tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.mapTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.mapTable tbody tr:hover {
+  background: var(--hover-bg);
+}
+
+.mapReference {
+  font-weight: 600;
+  color: var(--muted-strong);
+  white-space: nowrap;
+}
+
+.mapDestination {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--panel-2);
+  color: var(--brand);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mapWhy {
+  font-size: 11px;
+  color: var(--faint);
+}
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 1050px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .card {
+    padding: var(--space-4);
+  }
+
+  .mapTable,
+  .mapTable thead,
+  .mapTable tbody,
+  .mapTable tr,
+  .mapTable th,
+  .mapTable td {
+    display: block;
+    width: 100%;
+  }
+
+  .mapTable thead {
+    display: none;
+  }
+
+  .mapTable tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 3px var(--space-3);
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mapTable tbody td {
+    padding: 2px 0;
+    border: 0;
+  }
+
+  .mapReference {
+    grid-column: 1;
+  }
+
+  .mapTable tbody td:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+  }
+
+  .mapWhy {
+    grid-column: 1 / -1;
+  }
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

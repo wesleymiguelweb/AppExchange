@@ -1,6 +1,8 @@
 .card {
-  background: var(--white);
-  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--glass-highlight) 22%, transparent), transparent 120px),
+    color-mix(in srgb, var(--panel) 88%, transparent);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   padding: var(--space-5);

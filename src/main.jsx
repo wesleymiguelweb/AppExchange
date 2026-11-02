@@ -5,6 +5,8 @@ import AppErrorBoundary from './components/AppErrorBoundary.jsx';
 import { I18nProvider } from './i18n/I18nProvider.jsx';
 import './styles/tokens.css';
 import './styles/global.css';
+import './styles/fonts.css';
+import './styles/tailwind.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
