@@ -1,0 +1,65 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: min(1120px, 100% - 48px);
+  margin: 0 auto;
+  min-height: 72px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  transition: transform var(--transition);
+}
+
+.brand:hover .mark {
+  transform: rotate(-6deg);
+}
+
+.wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--ink-45);
+}
+
+@media (max-width: 720px) {
+  .inner {
+    width: calc(100% - 32px);
+    min-height: 64px;
+  }
+
+  .kicker {
+    display: none;
+  }
+}

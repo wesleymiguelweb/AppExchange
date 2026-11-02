@@ -1,0 +1,129 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.label {
+  display: inline-block;
+}
+
+/* Tamanhos */
+.sm {
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.md {
+  min-height: 42px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.lg {
+  min-height: 48px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* Variantes — o guide define primária Ink, secundária outline e selecionada Accent */
+.primary {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--ink-strong);
+  border-color: var(--ink-strong);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--hover);
+  border-color: var(--ink);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.quiet {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--border);
+}
+
+.quiet:hover:not(:disabled) {
+  background: var(--white);
+  border-color: var(--border-strong);
+}
+
+.loading {
+  position: relative;
+  color: transparent;
+}
+
+.loading .label {
+  visibility: hidden;
+}
+
+.spinner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  color: var(--paper);
+  animation: spin 700ms linear infinite;
+}
+
+.secondary .spinner,
+.ghost .spinner,
+.quiet .spinner {
+  color: var(--ink);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,117 @@
+.block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  border: 1px dashed var(--border);
+}
+
+.loading {
+  gap: var(--space-5);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--ink-70);
+  background: var(--surface);
+}
+
+.error .icon {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.message {
+  max-width: 52ch;
+  font-size: 14px;
+  color: var(--ink-60);
+}
+
+.retry {
+  margin-top: var(--space-1);
+}
+
+.compact {
+  padding: var(--space-5);
+}
+
+/* Skeleton de carregamento (sem gradientes — pulsação de opacidade) */
+.skeletonChart {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  width: 100%;
+  height: 92px;
+}
+
+.skeletonChart span {
+  flex: 1;
+  border-radius: 6px;
+  background: var(--surface);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skeletonChart span:nth-child(1) {
+  height: 46%;
+}
+
+.skeletonChart span:nth-child(2) {
+  height: 78%;
+  animation-delay: 120ms;
+}
+
+.skeletonChart span:nth-child(3) {
+  height: 60%;
+  animation-delay: 240ms;
+}
+
+.skeletonRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.skeletonRows span {
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skeletonRows span:nth-child(1) {
+  width: 100%;
+}
+
+.skeletonRows span:nth-child(2) {
+  width: 82%;
+  animation-delay: 120ms;
+}
+
+.skeletonRows span:nth-child(3) {
+  width: 64%;
+  animation-delay: 240ms;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
