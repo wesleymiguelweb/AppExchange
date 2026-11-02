@@ -1,101 +1,272 @@
 # Hermes · Câmbio com clareza
 
-SPA responsiva para conversão de moedas e análise histórica. A direção visual usa as imagens compartilhadas como inspiração: dashboard claro, cartões arredondados, gráficos compactos e um cartão de destaque em gradiente. O conteúdo foi adaptado para câmbio.
+SPA em **React + Vite** para conversão de moedas, análise histórica por período e exportação de cotações em CSV, usando apenas dados públicos de referência do **Banco Central Europeu** via [Frankfurter](https://frankfurter.dev). A interface segue o design guide e o wireframe fornecidos (direção editorial **HERMES**), com suporte a **PT-BR, EN e ES**.
 
-## Executar localmente
+![Visão geral em desktop](docs/evidence/desktop.png)
 
-Requisitos: Node.js 20.19+ ou 22.12+.
+---
+
+## 1. O que a aplicação faz
+
+| Área | O que entrega |
+| --- | --- |
+| **Conversor** | Valor editável, moedas de origem/destino, troca rápida, cotação atual, data da cotação e valor convertido — tudo recalculado em tempo real. |
+| **Análise histórica** | Oito períodos (7D, 15D, 30D, 3M, 6M, 1A, 5A, 10A), gráfico de linha em SVG puro, tooltip/crosshair, navegação por teclado e resumo com taxa atual, mínima, máxima, média e variação %. |
+| **Tabela de cotações** | Todas as moedas suportadas contra a moeda de origem, busca por código ou nome (sem acento), ordenação por código/nome/taxa, valor convertido por linha e ação para usar a moeda no conversor. |
+| **CSV** | Exportação sem bibliotecas externas: `data;base;destino;nome;taxa;valor convertido`, UTF-8 com BOM, `;` como separador, datas ISO e ponto decimal. |
+| **Idiomas** | PT-BR (padrão), EN e ES. O idioma é detectado pelo navegador, pode ser trocado no cabeçalho e fica salvo em `localStorage`. |
+| **Estados** | Carregamento (skeleton), erro com "Tentar novamente" por cartão, vazio por busca sem resultado e feedback de sucesso/erro no CSV via toast. |
+
+Não há login, chave de API, backend próprio ou dependência de UI kit.
+
+---
+
+## 2. Stack e justificativas
+
+| Escolha | Por quê |
+| --- | --- |
+| **React 19 + Vite 7** | Requisito do trabalho; Vite entrega dev server rápido e build otimizado sem configuração extra. |
+| **JavaScript + JSX (sem TypeScript)** | Mantém o foco nos fundamentos pedidos (componentes, props, estado, efeitos e hooks). |
+| **CSS Modules** | Escopo local por componente, zero dependência em runtime e controle total dos tokens do design guide. Tailwind foi descartado porque o protótipo exige muitos valores específicos (grid de 8px, tipografia editorial, bordas de 1px) e o CSS Modules deixa a intenção mais legível na entrega acadêmica. |
+| **SVG puro para o gráfico** | Nenhuma biblioteca de charting é necessária: o controle de eixo, escala, crosshair, tooltip e teclado fica explícito no código — e vira evidência de domínio de SVG/React. |
+| **`prop-types`** | Validação simples de props em tempo de desenvolvimento, sem custo no bundle de produção (o React não remove, mas o custo é mínimo). |
+| **`Intl` (nativo)** | Formatação de números, moedas, percentuais e datas por locale sem bibliotecas. `Intl.DisplayNames` resolve os nomes das moedas. |
+| **Dicionário próprio de i18n** | Três idiomas, mensagens com interpolação e troca em runtime sem dependências. |
+
+---
+
+## 3. Como executar
+
+Requisitos: **Node.js 20.19+** (ou 22.12+) e npm.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abra o endereço local mostrado pelo Vite. Para gerar a versão de produção, rode `npm run build`; `npm run preview` permite visualizar o conteúdo gerado.
+Abra o endereço exibido pelo Vite (por padrão `http://localhost:5173`).
 
-## Estrutura
+Outros comandos:
 
-- `src/App.jsx`: composição do painel e estado compartilhado do conversor.
-- `src/components/`: cartões funcionais, gráfico SVG, ícones e controle do tema.
-- `src/hooks/`: lista de moedas, consulta de câmbio, busca com debounce e tema persistente.
-- `src/services/frankfurter.js`: chamadas HTTP isoladas para a API.
-- `src/utils/`: formatação de números/datas e geração do CSV.
-- `src/styles/global.css`: entrada Tailwind, variante dark, animação do gráfico e estilos base.
-- `src/main.jsx`: inicialização React e importação dos estilos.
+```bash
+npm run build     # build de produção em dist/
+npm run preview   # serve o build localmente
+```
 
-Tailwind CSS v4 com o plugin oficial para Vite foi escolhido para compor o layout com utilitários responsivos diretamente nos componentes. O gráfico SVG mantém regras específicas próprias; o seletor `data-theme` ativa a variante `dark` e o tema fica salvo no navegador.
+> Observação para Windows: se o PowerShell bloquear `npm.ps1`, use `npm.cmd` nos mesmos comandos.
 
-O botão de tema alterna entre claro e escuro e salva a escolha em `localStorage`; na primeira visita, a preferência do sistema é usada. O gráfico apresenta a série histórica diária, com tooltip por cursor e navegação por teclado. A consulta renova automaticamente a cada minuto.
+---
 
-## Dados de câmbio
+## 4. Estrutura do projeto
 
-O painel usa `fetch` e `async/await` para consultar `https://api.frankfurter.dev/v1/currencies`, `/latest?base={moeda}&symbols={destino}` e `/{data inicial}..{data final}?base={moeda}&symbols={destino}`. A API Frankfurter v1 está depreciada, mas segue funcionando. As taxas são referências diárias, não cotações em tempo real. Se a lista de moedas falhar, a interface mantém uma lista inicial reduzida e informa falhas nas consultas de câmbio.
+```
+AppExchange/
+├── docs/
+│   ├── CHECKLIST.md          # requisitos do trabalho → evidência no código
+│   ├── EVIDENCE.md           # trechos de código, capturas e resultados de teste
+│   ├── PROTOTIPO.md          # leitura do design guide e do wireframe
+│   ├── QA.md                 # matriz de testes executados
+│   └── evidence/             # capturas desktop, tablet, mobile e estados
+├── postman/
+│   └── Hermes-Frankfurter.postman_collection.json
+├── public/
+│   └── favicon.svg
+├── src/
+│   ├── components/
+│   │   ├── chart/            # ChartCard, PeriodTabs, RateChart, PeriodSummary
+│   │   ├── converter/        # ConverterCard, CurrencySelect
+│   │   ├── layout/           # Header, LanguageSwitcher
+│   │   ├── rates/            # RatesCard, RatesTable, TableToolbar
+│   │   ├── ui/               # Button, Card, Field, Icon, StateBlock, Toast
+│   │   └── AppErrorBoundary.jsx
+│   ├── constants/periods.js  # os oito períodos do wireframe
+│   ├── hooks/                # useCurrencies, useLatestRates, useExchangeRate,
+│   │                         # useHistoricalRates, useDebouncedValue, useToast,
+│   │                         # useElementWidth
+│   ├── i18n/                 # provider, hook e dicionários PT/EN/ES
+│   ├── services/             # http.js (fetch/erros) e frankfurterApi.js
+│   ├── styles/               # tokens.css (HERMES) e global.css
+│   ├── utils/                # csv, dates, format, series, validation, erro, cx
+│   ├── App.jsx               # estado compartilhado e composição da página
+│   ├── App.module.css
+│   └── main.jsx
+├── index.html
+├── package.json
+├── vite.config.js
+└── .gitignore
+```
 
-O período histórico é selecionado na barra superior. O conversor recalcula o valor localmente a partir da taxa recebida. A lista de moedas oferece busca com debounce, ordenação por código, nome e cotação, além de paginação. As taxas por moeda são carregadas em relação à moeda base. A exportação CSV é gerada por uma utilidade reutilizável no navegador e inclui data, par, taxa e valores. O gráfico SVG permite explorar os pontos com o cursor ou as setas do teclado. A tela atualiza a consulta a cada minuto, mas a série permanece diária porque essa é a frequência da fonte.
+### Onde começar a ler
 
-## React aplicado
+1. `src/services/frankfurterApi.js` — contrato com a API.
+2. `src/hooks/useHistoricalRates.js` — ciclo de vida de uma requisição com cancelamento.
+3. `src/App.jsx` — estado compartilhado, derivações e exportação.
+4. `src/components/chart/RateChart.jsx` — gráfico, interação e acessibilidade.
+5. `src/components/rates/RatesCard.jsx` — busca, ordenação e estado vazio.
 
-Componentes funcionais e JSX compõem a página. `useState` mantém valor, par de moedas, período, dados e mensagens. Os campos e botões são controlados por eventos React; estado compartilhado fica no componente principal (lifting state up). `useEffect` carrega moedas e atualiza taxa e série histórica quando o par ou período muda. `useMemo` filtra e ordena a lista de moedas. `MiniLine` recebe dados por props e desenha as séries em SVG.
+---
 
-## Explicação técnica do fluxo
+## 5. Consumo da API
 
-### Consumo da API
+Base: `https://api.frankfurter.dev/v1` — pública, **sem chave**.
 
-As chamadas estão isoladas em `src/services/frankfurter.js`. `request` usa `fetch` com `async/await`, valida o status HTTP e converte a resposta JSON. O `AbortSignal` permite cancelar uma consulta se o usuário trocar o par antes da resposta chegar.
+| Uso | Endpoint | Exemplo |
+| --- | --- | --- |
+| Lista de moedas | `GET /currencies` | `https://api.frankfurter.dev/v1/currencies` |
+| Últimas taxas por base | `GET /latest?base={BASE}` | `https://api.frankfurter.dev/v1/latest?base=BRL` |
+| Série histórica | `GET /{start}..{end}?base={BASE}&symbols={QUOTE}` | `https://api.frankfurter.dev/v1/2026-10-04..2026-11-02?base=BRL&symbols=USD` |
 
-Exemplo de taxa atual para o conversor:
+Exemplo de resposta de `/latest`:
 
-```js
-export function getLatestRate(base, quote, signal) {
-  return request(
-    `/latest?base=${encodeURIComponent(base)}&symbols=${encodeURIComponent(quote)}`,
-    signal,
-  );
+```json
+{
+  "amount": 1.0,
+  "base": "BRL",
+  "date": "2026-10-30",
+  "rates": {
+    "AUD": 0.2831,
+    "USD": 0.1839,
+    "EUR": 0.1587
+  }
 }
 ```
 
-O hook `useMarketData` chama a cotação atual e a série histórica em paralelo. Ele valida os números, organiza os pontos por data e calcula mínima, máxima, média e variação. Se o histórico falhar, a cotação atual ainda pode alimentar o conversor.
+### Isolamento e tratamento de falhas
 
-### Conversão e estado React
+- `src/services/http.js` é a única camada que chama `fetch`. Ela aplica **timeout de 12s**, encaminha `AbortSignal`, valida o JSON e normaliza tudo em `ApiError` com `type` (`network`, `http`, `invalid`, `timeout`).
+- `src/services/frankfurterApi.js` valida o formato de cada payload (`rates` precisa existir e ser objeto) e normaliza datas e números.
+- Os componentes nunca veem `fetch` nem status HTTP: recebem `isLoading`, `error` e `retry`. `src/utils/errorMessages.js` converte o erro em chave de tradução.
 
-`App.jsx` mantém `base`, `quote`, `amount` e `days` com `useState`. Esse lifting state up mantém conversor, gráfico, métricas e lista alinhados. Os cartões recebem valores e callbacks por props; inputs e selects usam `value`/`onChange`, então são controlados pelo React.
+### Economia de requisições
 
-`useCurrencies`, `useMarketData`, `useLatestRates`, `useDebounce`, `useTheme` e `useCurrentTime` isolam carregamento, busca e preferências. Os `useEffect` fazem as consultas ao montar ou quando o par/período muda e limpam timers ou requisições no unmount.
+- **Moedas**: uma requisição ao montar (`useCurrencies`).
+- **Últimas taxas**: uma por moeda de origem (`useLatestRates`). O conversor e a tabela compartilham o mesmo mapa — trocar apenas a moeda de destino **não** refaz a chamada.
+- **Histórico**: só quando muda o par ou o período; a requisição anterior é abortada (`AbortController`) para evitar corrida e desperdício.
+- **Busca e ordenação**: 100% no cliente; não geram requisição.
+- `useDebouncedValue` evita recalcular o filtro a cada tecla.
 
-### Gráfico, filtros e paginação
+---
 
-`CurrencyChart` recebe a série via props e desenha uma linha SVG com pontos calculados a partir das datas e taxas. O ponteiro seleciona o ponto mais próximo; o mesmo controle aceita setas do teclado. A lista filtra por código/nome, ordena por código, nome ou taxa e fatia o resultado em páginas de oito moedas. Esses dados são transformações de arrays, sem alterar o estado original.
+## 6. Regras de negócio e decisões
 
-### Exportação CSV
+- **Conversão ao vivo**: o valor é recalculado a cada tecla a partir da taxa mais recente; não existe botão "converter" no wireframe.
+- **Validação do valor** (`src/utils/validation.js`): aceita `1.234,56` em PT/ES e `1,234.56` em EN, exige número finito **> 0**, limita a 1.000.000.000 e ignora letras/símbolos na digitação. Mensagens específicas para vazio, inválido e acima do limite, ligadas ao campo por `aria-describedby` + `aria-invalid`.
+- **Moeda de origem ≠ destino**: o select oposto remove a moeda já escolhida, impedindo o par inválido sem depender de mensagem de erro.
+- **Troca (swap)**: inverte origem e destino em um clique; o botão fica desabilitado durante o carregamento.
+- **Tabela**: mostra 1 unidade da moeda de origem em todas as demais. A coluna "Valor convertido" usa o valor digitado no conversor. O botão "Usar" define a moeda como destino do conversor e rola até o topo do cartão (respeitando `prefers-reduced-motion`).
+- **Períodos**: os oito rótulos do wireframe são mantidos. "7D" significa uma janela fechada de 7 datas (hoje + 6 anteriores); o intervalo exibido é sempre o mesmo enviado à API.
+- **CSV**: usa `;` (padrão de planilhas pt-BR), BOM UTF-8 (acentos corretos no Excel), datas ISO e ponto decimal para não corromper números. O nome inclui o par e a data: `hermes-BRL-USD-2026-11-02.csv`.
+- **Ordenação**: clicar no cabeçalho alterna crescente/decrescente; a primeira ordem de "Taxa" é decrescente (maior primeiro), por ser a leitura mais útil. Em telas pequenas, um `<select>` equivalente aparece na barra de ferramentas.
+- **Idioma**: `pt-BR` por padrão, com detecção do navegador e persistência em `localStorage` (`hermes.locale`). `document.documentElement.lang` acompanha a troca.
+- **Sem seções inventadas**: a página tem exatamente cabeçalho, faixa de título, conversor, histórico e tabela/filtros/CSV, além do rodapé de fonte.
 
-`src/utils/exportCsv.js` recebe um registro de conversão, monta cabeçalho e valores, escapa aspas e usa `;` como separador. O BOM UTF-8 ajuda planilhas configuradas em pt-BR. O arquivo é criado com `Blob` e uma URL temporária do navegador:
+---
 
-```js
-const csv = `\uFEFF${rows
-  .map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(';'))
-  .join('\r\n')}`;
-const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-link.href = url;
-link.download = `cambio-${base}-${quote}.csv`;
-link.click();
-```
+## 7. Acessibilidade
 
-Após o início do download, a URL temporária é revogada para liberar memória. A função é reutilizável e não depende de bibliotecas de CSV.
+- Labels reais (`<label for>`) em todos os campos; selects nativos.
+- Erros com `role="alert"`, `aria-invalid` e `aria-describedby` apontando para a mensagem.
+- Foco visível global (`:focus-visible`) e *skip link* "Pular para o conteúdo".
+- Botões desabilitados durante requisições e `aria-busy` no botão de carregamento.
+- Gráfico focável: setas ←/→ navegam ponto a ponto, `Home`/`End` vão às extremidades; cada ponto é anunciado em região `aria-live`, e o SVG tem `role="img"` + descrição textual (início, fim, mínima, máxima).
+- Tabela com `<caption>` (sr-only), `scope="col"`/`scope="row"` e `aria-sort` sincronizado.
+- Contagem de resultados em `aria-live="polite"`; toast com `role="status"`/`role="alert"`.
+- Contraste: texto principal `#172B24` sobre `#F7F7F5` (≈ 13:1); textos secundários mantêm ≥ 4.5:1.
+- `prefers-reduced-motion` desliga animações e rolagem suave.
+- Layout mobile da tabela usa cartões empilhados com rótulos visíveis, sem depender de scroll horizontal.
 
-## Git e publicação no GitHub
+---
+
+## 8. Responsividade
+
+| Faixa | Comportamento |
+| --- | --- |
+| **≥ 1120px** | Container central de 1120px, conversor em duas colunas com botão de troca no meio, gráfico e tabela em largura total. |
+| **861–1119px** | Container fluido; gráfico e resumo se reorganizam (5 → 3 colunas de métricas). |
+| **≤ 860px** | Conversor empilha origem → troca → destino. |
+| **≤ 760px** | Tabela vira cartões; barra de ferramentas mostra o select de ordenação. |
+| **≤ 720px** | Cabeçalho compacto (esconde o kicker), paddings reduzidos, rodapé em coluna. |
+
+Capturas: [desktop](docs/evidence/desktop.png) · [tablet](docs/evidence/tablet.png) · [mobile](docs/evidence/mobile.png). Métricas verificadas: nenhum overflow horizontal em 1440, 834 e 390px.
+
+---
+
+## 9. Requisitos do trabalho
+
+A matriz completa, com arquivo e linha de cada item, está em [`docs/CHECKLIST.md`](docs/CHECKLIST.md). Resumo:
+
+- Componentes funcionais, JSX, props e `propTypes` — `src/components/**`.
+- `useState` + inputs controlados — `App.jsx`, `ConverterCard.jsx`, `RatesCard.jsx`.
+- **Lifting State Up** — `App.jsx` centraliza valor, par e período.
+- `useEffect` com limpeza — `useCurrencies`, `useLatestRates`, `useHistoricalRates`, `useToast`, `useElementWidth`.
+- **Hooks customizados** — `useCurrencies`, `useExchangeRate`, `useHistoricalRates`, `useDebouncedValue` (+ `useLatestRates`, `useToast`, `useElementWidth`).
+- `fetch` + `async/await` — `services/http.js` e `services/frankfurterApi.js`.
+- Arrays/objetos — `map`, `filter`, `sort`, `reduce`, `Object.entries`, spread e desestruturação.
+- Gráfico — SVG puro com escala, eixos, área, crosshair e tooltip.
+- Filtros/ordenação — `RatesCard.jsx` com busca sem acento e `aria-sort`.
+- CSV — `utils/csv.js` sem bibliotecas.
+- Formatação pt-BR — `utils/format.js` com `Intl`.
+- Git/GitHub — seção 10 e [`docs/COMMITS.md`](docs/COMMITS.md).
+
+---
+
+## 10. Git e GitHub
+
+Repositório público: <https://github.com/wesleymiguelweb/AppExchange> — o remoto
+`origin` já está configurado e o histórico usa commits convencionais.
 
 ```bash
-git init
-git add .
-git commit -m "feat: adicionar painel de conversão de moedas"
-git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-git push -u origin main
+# Enviar a branch principal
+git push origin main
 ```
 
-Mensagens de commit sugeridas:
+Fluxo de trabalho sugerido:
 
-- `feat: adicionar conversor de moedas`
-- `feat: implementar análise histórica`
-- `feat: adicionar exportação CSV`
-- `fix: tratar falhas da API de câmbio`
+```bash
+git checkout -b feat/nome-da-melhoria
+# ... alterações ...
+git add .
+git commit -m "feat: descrever a melhoria"
+git push -u origin feat/nome-da-melhoria
+# abra o Pull Request no GitHub
+```
+
+Commits sugeridos (histórico real em [`docs/COMMITS.md`](docs/COMMITS.md)):
+
+```
+chore: configurar React com Vite
+feat: criar camada de serviços da Frankfurter
+feat: adicionar hooks de câmbio com cancelamento
+feat: montar conversor com validação e troca de moedas
+feat: desenhar gráfico histórico em SVG
+feat: listar cotações com busca e ordenação
+feat: exportar cotações em CSV
+feat: internacionalizar em PT, EN e ES
+style: aplicar design tokens HERMES e responsividade
+docs: registrar checklist, evidências e coleção Postman
+```
+
+---
+
+## 11. Verificação
+
+- `npm run build` conclui com sucesso (Vite 7, ~280 kB de JS / 88 kB gzip).
+- Testes manuais e automatizados via Chrome headless registrados em [`docs/QA.md`](docs/QA.md): validação, swap, 8 períodos, busca com/sem acento, ordenação, seleção de linha, download do CSV, 3 idiomas, foco no gráfico e simulação de falha total da API.
+- Nenhum erro de console nas execuções finais.
+
+---
+
+## 12. Limitações
+
+- A Frankfurter publica **taxas de referência diárias do BCE**, não preços em tempo real nem spread comercial. Fins de semana e feriados não têm cotação.
+- A série é diária por natureza da fonte; não há candles intradiários.
+- O app depende de rede para carregar; quando a API falha, cada cartão mostra erro e permite tentar novamente (não há cache offline).
+- Não há testes unitários automatizados (o escopo pedia build funcional e documentação); a verificação foi feita por build + roteiro de QA documentado.
+
+---
+
+## 13. Dados e créditos
+
+- Dados: [Frankfurter](https://frankfurter.dev) · Banco Central Europeu.
+- Tipografia: [Inter](https://fonts.google.com/specimen/Inter) (Google Fonts).
+- Design: design guide `UI.JPEG` e wireframe `Wire.JPEG` fornecidos no enunciado; leitura documentada em [`docs/PROTOTIPO.md`](docs/PROTOTIPO.md).

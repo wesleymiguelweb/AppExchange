@@ -1,0 +1,311 @@
+{
+  "info": {
+    "_postman_id": "8f2b1a7c-4d3e-4f6a-9c1b-hermes000001",
+    "name": "Hermes · Frankfurter API",
+    "description": "Coleção de referência para os três endpoints públicos usados pelo Hermes.\n\nA Frankfurter não exige chave de API. As variáveis `base`, `quote`, `start` e `end` podem ser alteradas em **Collection Variables** antes de executar.\n\nOrdem sugerida: Listar moedas → Últimas taxas → Série histórica → Erro esperado.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Listar moedas suportadas",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta é JSON', () => pm.response.to.be.json);",
+              "",
+              "const currencies = pm.response.json();",
+              "",
+              "pm.test('Retorna um mapa de código → nome', () => {",
+              "  pm.expect(currencies).to.be.an('object');",
+              "  pm.expect(currencies).to.not.be.an('array');",
+              "  Object.entries(currencies).forEach(([code, name]) => {",
+              "    pm.expect(code).to.match(/^[A-Z]{3}$/);",
+              "    pm.expect(name).to.be.a('string').and.not.empty;",
+              "  });",
+              "});",
+              "",
+              "pm.test('Contém as moedas usadas pela aplicação', () => {",
+              "  pm.expect(currencies).to.have.property('BRL');",
+              "  pm.expect(currencies).to.have.property('USD');",
+              "  pm.expect(currencies).to.have.property('EUR');",
+              "});",
+              "",
+              "pm.test('Lista tem pelo menos 20 moedas', () => {",
+              "  pm.expect(Object.keys(currencies).length).to.be.above(20);",
+              "});",
+              "",
+              "pm.collectionVariables.set('currencyCount', Object.keys(currencies).length);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/currencies",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "currencies"
+          ]
+        },
+        "description": "Retorna todas as moedas suportadas no formato `{ \"BRL\": \"Brazilian Real\", ... }`.\n\nUsado por `useCurrencies` para preencher os selects e a tabela."
+      },
+      "response": []
+    },
+    {
+      "name": "Últimas taxas por moeda base",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta é JSON', () => pm.response.to.be.json);",
+              "",
+              "const body = pm.response.json();",
+              "",
+              "pm.test('Base da resposta é a variável base', () => {",
+              "  pm.expect(body.base).to.eql(pm.collectionVariables.get('base'));",
+              "});",
+              "",
+              "pm.test('Data em formato ISO (YYYY-MM-DD)', () => {",
+              "  pm.expect(body.date).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);",
+              "});",
+              "",
+              "pm.test('Inclui a moeda de destino com taxa positiva', () => {",
+              "  const quote = pm.collectionVariables.get('quote');",
+              "  pm.expect(body.rates).to.have.property(quote);",
+              "  pm.expect(body.rates[quote]).to.be.a('number').and.to.be.above(0);",
+              "});",
+              "",
+              "pm.test('Todas as taxas são números positivos', () => {",
+              "  Object.values(body.rates).forEach((rate) => {",
+              "    pm.expect(rate).to.be.a('number').and.to.be.above(0);",
+              "  });",
+              "});",
+              "",
+              "pm.collectionVariables.set('lastRateDate', body.date);",
+              "pm.collectionVariables.set('lastRate', body.rates[pm.collectionVariables.get('quote')]);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/latest?base={{base}}&symbols={{quote}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "latest"
+          ],
+          "query": [
+            {
+              "key": "base",
+              "value": "{{base}}"
+            },
+            {
+              "key": "symbols",
+              "value": "{{quote}}"
+            }
+          ]
+        },
+        "description": "Taxa mais recente publicada pelo BCE para o par `base → quote`.\n\nO app usa esta chamada uma vez por moeda de origem; o conversor e a tabela compartilham o mesmo mapa de taxas."
+      },
+      "response": []
+    },
+    {
+      "name": "Série histórica do par",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Resposta é JSON', () => pm.response.to.be.json);",
+              "",
+              "const body = pm.response.json();",
+              "const quote = pm.collectionVariables.get('quote');",
+              "const dates = Object.keys(body.rates || {});",
+              "",
+              "pm.test('Base e intervalo são os enviados', () => {",
+              "  pm.expect(body.base).to.eql(pm.collectionVariables.get('base'));",
+              "  pm.expect(body.start_date).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);",
+              "  pm.expect(body.end_date).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);",
+              "});",
+              "",
+              "pm.test('Série tem pelo menos 15 dias úteis', () => {",
+              "  pm.expect(dates.length).to.be.at.least(15);",
+              "});",
+              "",
+              "pm.test('Datas em ordem crescente e únicas', () => {",
+              "  const sorted = [...dates].sort();",
+              "  pm.expect(dates).to.eql(sorted);",
+              "  pm.expect(new Set(dates).size).to.eql(dates.length);",
+              "});",
+              "",
+              "pm.test('Cada ponto tem a taxa do par', () => {",
+              "  dates.forEach((date) => {",
+              "    const rate = body.rates[date][quote];",
+              "    pm.expect(rate).to.be.a('number').and.to.be.above(0);",
+              "  });",
+              "});",
+              "",
+              "pm.collectionVariables.set('seriesPoints', dates.length);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/{{start}}..{{end}}?base={{base}}&symbols={{quote}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "{{start}}..{{end}}"
+          ],
+          "query": [
+            {
+              "key": "base",
+              "value": "{{base}}"
+            },
+            {
+              "key": "symbols",
+              "value": "{{quote}}"
+            }
+          ]
+        },
+        "description": "Série diária do intervalo fechado `start..end` (sem fins de semana e feriados).\n\nUsado por `useHistoricalRates`; o app envia a janela de cada período (7D, 30D, 1A…)."
+      },
+      "response": []
+    },
+    {
+      "name": "Erro esperado · moeda inexistente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Retorna 404 para código inválido', () => pm.response.to.have.status(404));",
+              "pm.test('Resposta é JSON', () => pm.response.to.be.json);",
+              "",
+              "const body = pm.response.json();",
+              "",
+              "pm.test('Mensagem de erro identificável', () => {",
+              "  const text = JSON.stringify(body).toLowerCase();",
+              "  pm.expect(text).to.match(/not found|invalid|unknown|no such/);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/latest?base={{base}}&symbols=XXX",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "latest"
+          ],
+          "query": [
+            {
+              "key": "base",
+              "value": "{{base}}"
+            },
+            {
+              "key": "symbols",
+              "value": "XXX"
+            }
+          ]
+        },
+        "description": "Documenta o erro HTTP tratado por `http.js` → `ApiError` com `type: 'http'` e `status: 404`."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.frankfurter.dev/v1",
+      "type": "string"
+    },
+    {
+      "key": "base",
+      "value": "BRL",
+      "type": "string"
+    },
+    {
+      "key": "quote",
+      "value": "USD",
+      "type": "string"
+    },
+    {
+      "key": "start",
+      "value": "2026-10-04",
+      "type": "string"
+    },
+    {
+      "key": "end",
+      "value": "2026-11-02",
+      "type": "string"
+    },
+    {
+      "key": "currencyCount",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "lastRateDate",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "lastRate",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "seriesPoints",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
