@@ -1,0 +1,51 @@
+/*
+ * Design tokens extraídos do design guide "HERMES" (UI.JPEG).
+ * Direção de arte: editorial, precisa, confiável.
+ * Sem gradientes, sem glassmorphism, sem excesso de cartões.
+ */
+:root {
+  --ink: #172b24;
+  --ink-strong: #0f1f1a;
+  --forest: #175f49;
+  --forest-dark: #124a39;
+  --paper: #f7f7f5;
+  --surface: #dce4df;
+  --accent: #ddece5;
+  --white: #ffffff;
+
+  /* Derivados de Ink (não existem como swatch no guide) */
+  --ink-80: rgba(23, 43, 36, 0.8);
+  --ink-70: rgba(23, 43, 36, 0.7);
+  --ink-60: rgba(23, 43, 36, 0.6);
+  --ink-45: rgba(23, 43, 36, 0.45);
+  --ink-30: rgba(23, 43, 36, 0.3);
+  --border: rgba(23, 43, 36, 0.14);
+  --border-strong: rgba(23, 43, 36, 0.26);
+  --hover: rgba(23, 43, 36, 0.04);
+
+  /* Estados não presentes no guide: tons terrosos coerentes com a paleta */
+  --danger: #9e3b2a;
+  --danger-strong: #7f2f21;
+  --danger-soft: #f6e7e3;
+  --success: #1c6b50;
+  --success-soft: #e4f2ec;
+
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 56px;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  --shadow-card: 0 1px 0 rgba(23, 43, 36, 0.04), 0 18px 40px -32px rgba(23, 43, 36, 0.35);
+  --transition: 150ms ease;
+}

@@ -1,0 +1,127 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.skipLink {
+  position: absolute;
+  top: -48px;
+  left: 16px;
+  z-index: 80;
+  padding: 10px 16px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top var(--transition);
+}
+
+.skipLink:focus {
+  top: 0;
+}
+
+.main {
+  width: min(1120px, 100% - 48px);
+  margin: 0 auto;
+  padding: var(--space-8) 0 var(--space-7);
+  flex: 1;
+}
+
+.main:focus {
+  outline: none;
+}
+
+.intro {
+  max-width: 680px;
+  margin-bottom: var(--space-6);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 5px 12px 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+}
+
+.eyebrowDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--forest);
+  box-shadow: 0 0 0 3px rgba(23, 95, 73, 0.14);
+}
+
+.title {
+  margin-top: var(--space-4);
+  font-size: clamp(30px, 4.2vw, 42px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.description {
+  margin-top: var(--space-3);
+  max-width: 58ch;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-60);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--ink-45);
+}
+
+.footerLink {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footerLink:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .main {
+    width: calc(100% - 32px);
+    padding-top: var(--space-6);
+  }
+
+  .intro {
+    margin-bottom: var(--space-5);
+  }
+
+  .description {
+    font-size: 15px;
+  }
+
+  .footer {
+    flex-direction: column;
+    margin-top: var(--space-6);
+  }
+}
