@@ -1,26 +1,34 @@
-import { useEffect, useState } from 'react';
-import { getCurrencies } from '../services/frankfurter.js';
+import { useCallback, useEffect, useState } from 'react';
+import { getCurrencies } from '../services/frankfurterApi.js';
+import { isAbortError } from '../services/http.js';
 
-const FALLBACK_CURRENCIES = { AUD: 'Dólar australiano', BRL: 'Real brasileiro', CAD: 'Dólar canadense', CHF: 'Franco suíço', CNY: 'Yuan chinês', EUR: 'Euro', GBP: 'Libra esterlina', JPY: 'Iene japonês', USD: 'Dólar americano' };
+const INITIAL_STATE = { currencies: [], isLoading: true, error: null };
 
+/**
+ * Carrega a lista de moedas suportadas uma única vez.
+ * `retry` permite repetir a requisição sem recarregar a página.
+ */
 export function useCurrencies() {
-  // A lista reduzida permite usar os campos mesmo antes da API responder ou sem rede.
-  const [currencies, setCurrencies] = useState(FALLBACK_CURRENCIES);
+  const [state, setState] = useState(INITIAL_STATE);
+  const [attempt, setAttempt] = useState(0);
+
   useEffect(() => {
     const controller = new AbortController();
-    async function loadCurrencies() {
-      try {
-        const data = await getCurrencies(controller.signal);
-        if (!Array.isArray(data) && typeof data === 'object') {
-          const validCurrencies = Object.fromEntries(Object.entries(data).filter(([code, name]) => /^[A-Z]{3}$/.test(code) && typeof name === 'string'));
-          if (Object.keys(validCurrencies).length) setCurrencies(validCurrencies);
-        }
-      } catch (error) {
-        if (error.name !== 'AbortError') { /* A lista reduzida mantém os campos utilizáveis sem rede. */ }
-      }
-    }
-    loadCurrencies();
+    setState((previous) => ({ ...previous, isLoading: true, error: null }));
+
+    getCurrencies({ signal: controller.signal })
+      .then((currencies) => {
+        setState({ currencies, isLoading: false, error: null });
+      })
+      .catch((error) => {
+        if (isAbortError(error)) return;
+        setState({ currencies: [], isLoading: false, error });
+      });
+
     return () => controller.abort();
-  }, []);
-  return currencies;
+  }, [attempt]);
+
+  const retry = useCallback(() => setAttempt((value) => value + 1), []);
+
+  return { ...state, retry };
 }

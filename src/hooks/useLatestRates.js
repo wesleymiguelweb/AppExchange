@@ -1,38 +1,43 @@
-import { useEffect, useState } from 'react';
-import { getLatestRates } from '../services/frankfurter.js';
+import { useCallback, useEffect, useState } from 'react';
+import { getLatestRates } from '../services/frankfurterApi.js';
+import { isAbortError } from '../services/http.js';
 
-const REFRESH_INTERVAL = 60_000;
-
+/**
+ * Taxas mais recentes para uma moeda base (todas as moedas de destino de uma vez).
+ * Uma requisição por base — o conversor e a tabela compartilham o mesmo resultado.
+ */
 export function useLatestRates(base) {
-  // Guarda uma cotação por código para busca, exibição e ordenação por taxa.
-  const [rates, setRates] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [state, setState] = useState({
+    rates: null,
+    date: null,
+    isLoading: Boolean(base),
+    error: null,
+  });
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    const controller = new AbortController();
-    let active = true;
-    setRates({ [base]: 1 });
-    async function loadRates() {
-      setLoading(true);
-      try {
-        const response = await getLatestRates(base, controller.signal);
-        const validRates = Object.fromEntries(Object.entries(response.rates || {}).filter(([, rate]) => Number.isFinite(rate)));
-        if (active) setRates({ [base]: 1, ...validRates });
-      } catch (error) {
-        if (active && error.name !== 'AbortError') setRates({ [base]: 1 });
-      } finally {
-        if (active) setLoading(false);
-      }
+    if (!base) {
+      setState({ rates: null, date: null, isLoading: false, error: null });
+      return undefined;
     }
-    loadRates();
-    return () => { active = false; controller.abort(); };
-  }, [base, refreshKey]);
 
-  useEffect(() => {
-    const timer = window.setInterval(() => setRefreshKey((key) => key + 1), REFRESH_INTERVAL);
-    return () => window.clearInterval(timer);
-  }, []);
+    const controller = new AbortController();
+    // Limpa as taxas ao trocar a base para nunca exibir par de moedas inconsistente.
+    setState({ rates: null, date: null, isLoading: true, error: null });
 
-  return { rates, loading };
+    getLatestRates(base, { signal: controller.signal })
+      .then((result) => {
+        setState({ rates: result.rates, date: result.date, isLoading: false, error: null });
+      })
+      .catch((error) => {
+        if (isAbortError(error)) return;
+        setState({ rates: null, date: null, isLoading: false, error });
+      });
+
+    return () => controller.abort();
+  }, [base, attempt]);
+
+  const retry = useCallback(() => setAttempt((value) => value + 1), []);
+
+  return { ...state, retry };
 }
