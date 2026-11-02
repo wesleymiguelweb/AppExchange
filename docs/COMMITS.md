@@ -21,7 +21,8 @@ responsabilidade:
 | `5302a01` | `feat` | Gráfico histórico em SVG com tooltip, teclado e resumo |
 | `c85172c` | `feat` | Tabela de cotações com busca, ordenação e exportação |
 | `a338c21` | `feat` | Composição da página única e estado compartilhado (`App.jsx`) |
-| *(este commit)* | `docs` | README, checklist, evidências, protótipo, QA e coleção Postman |
+| `b1f646a` | `docs` | README, checklist, evidências, protótipo, QA e coleção Postman |
+| `b60da17` | `docs` | Correção da captura do gráfico com o tooltip ativo |
 
 Para conferir:
 
@@ -31,8 +32,8 @@ git show --stat 5302a01        # exemplo de commit do gráfico
 ```
 
 > Os commits foram organizados por assunto de entrega. O estado final
-> (`a338c21` + documentação) é o que passou no build e no roteiro de QA; commits
-> intermediários não têm a intenção de formar uma aplicação executável isolada.
+> (`b60da17`) é o que passou no build e no roteiro de QA; commits intermediários
+> não têm a intenção de formar uma aplicação executável isolada.
 
 ## 2. Publicar / atualizar
 
