@@ -8,6 +8,7 @@ import { useToastContext } from '../context/ToastContext.jsx';
 import { useUI } from '../context/UIContext.jsx';
 import { buildCsvFilename, downloadCsv, toCsv } from '../utils/csv.js';
 import { todayIso } from '../utils/dates.js';
+import { isOutflow, sortEntriesDesc } from '../utils/entries.js';
 import Button from '../components/ui/Button.jsx';
 import ChangeBadge from '../components/ui/ChangeBadge.jsx';
 import CurrencyBadge from '../components/ui/CurrencyBadge.jsx';
@@ -15,6 +16,7 @@ import Icon from '../components/ui/Icon.jsx';
 import Pagination from '../components/ui/Pagination.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import ConfirmDialog from '../components/overlays/ConfirmDialog.jsx';
+import EntriesTable from '../components/portfolio/EntriesTable.jsx';
 import styles from './PortfolioView.module.css';
 
 const PAGE_SIZES = ['5', '10', '20'];
@@ -53,9 +55,9 @@ function sortRows(rows, sortId) {
   }
 }
 
-function StatCard({ label, value, hint, tone, viewId }) {
+function StatCard({ label, value, hint, tone }) {
   return (
-    <article className={styles.statCard} data-view-id={viewId}>
+    <article className={styles.statCard}>
       <span className={styles.statLabel}>{label}</span>
       <strong className={tone ? `${styles.statValue} ${styles[tone]}` : styles.statValue}>
         {value}
@@ -70,7 +72,6 @@ StatCard.propTypes = {
   value: PropTypes.node,
   hint: PropTypes.node,
   tone: PropTypes.oneOf(['positive', 'negative']),
-  viewId: PropTypes.string,
 };
 
 export default function PortfolioView() {
@@ -84,19 +85,48 @@ export default function PortfolioView() {
     totalPnl,
     pnlPercent,
     positionsCount,
+    entriesCount,
     isReady,
     removePosition,
+    removeEntry,
     resetPortfolio,
   } = usePortfolio();
   const { showToast } = useToastContext();
-  const { openPosition, openAsset } = useUI();
+  const { openEntry, openAsset } = useUI();
 
   const [query, setQuery] = useState('');
   const [sortId, setSortId] = useState('valueDesc');
   const [pageSize, setPageSize] = useState(5);
   const [page, setPage] = useState(1);
   const [confirm, setConfirm] = useState(null);
+  const [historyQuery, setHistoryQuery] = useState('all');
+  const [historyPage, setHistoryPage] = useState(1);
   const debouncedQuery = useDebouncedValue(query, 160);
+
+  const allEntries = useMemo(
+    () => positions.flatMap((position) => position.entries.map((entry) => ({ ...entry, code: position.code }))),
+    [positions],
+  );
+
+  const historyEntries = useMemo(() => {
+    const filtered = historyQuery === 'all'
+      ? allEntries
+      : allEntries.filter((entry) => entry.code === historyQuery);
+    return sortEntriesDesc(filtered);
+  }, [allEntries, historyQuery]);
+
+  const historyPageSize = 8;
+  const historyPageCount = Math.max(1, Math.ceil(historyEntries.length / historyPageSize));
+  const safeHistoryPage = Math.min(historyPage, historyPageCount);
+  const visibleHistory = historyEntries.slice(
+    (safeHistoryPage - 1) * historyPageSize,
+    safeHistoryPage * historyPageSize,
+  );
+
+  const historyCurrencies = useMemo(
+    () => [...new Set(positions.map((position) => position.code))].sort(),
+    [positions],
+  );
 
   const filteredRows = useMemo(() => {
     const term = normalize(debouncedQuery);
@@ -161,12 +191,52 @@ export default function PortfolioView() {
     }
   }
 
+  function handleExportHistory() {
+    if (historyEntries.length === 0) {
+      showToast(t('entries.exportEmpty'), 'error');
+      return;
+    }
+
+    try {
+      const columns = [
+        { label: t('entries.columns.date'), value: (entry) => entry.date },
+        {
+          label: t('entries.columns.type'),
+          value: (entry) => (isOutflow(entry) ? t('entries.outBadge') : t('entries.inBadge')),
+        },
+        { label: t('entries.columns.asset'), value: (entry) => entry.code },
+        { label: t('entries.columns.quantity'), value: (entry) => String(entry.quantity) },
+        { label: t('entries.columns.price'), value: (entry) => String(entry.price) },
+        { label: t('entries.columns.fee'), value: (entry) => String(entry.fee ?? 0) },
+        {
+          label: t('entries.columns.total'),
+          value: (entry) =>
+            String(
+              entry.quantity * entry.price +
+                (isOutflow(entry) ? -(entry.fee ?? 0) : (entry.fee ?? 0)),
+            ),
+        },
+      ];
+
+      const content = toCsv(columns, historyEntries);
+      const filename = buildCsvFilename('hermes-movimentacoes', todayIso());
+      downloadCsv(filename, content);
+      showToast(t('entries.exportSuccess', { count: historyEntries.length }));
+    } catch (error) {
+      console.error('[Hermes] falha ao exportar movimentações', error);
+      showToast(t('csv.error'), 'error');
+    }
+  }
+
   function handleConfirm() {
     if (!confirm) return;
 
     if (confirm.type === 'remove') {
       removePosition(confirm.row.id);
       showToast(t('portfolio.removed'));
+    } else if (confirm.type === 'removeEntry') {
+      removeEntry(confirm.entry.code, confirm.entry.id);
+      showToast(t('entries.removed'));
     } else {
       resetPortfolio();
       showToast(t('portfolio.resetDone'));
@@ -182,20 +252,30 @@ export default function PortfolioView() {
           confirmLabel: t('portfolio.removeConfirm'),
           tone: 'danger',
         }
-      : {
-          title: t('portfolio.resetTitle'),
-          message: t('portfolio.resetMessage'),
-          confirmLabel: t('portfolio.resetConfirm'),
-          tone: 'primary',
-        };
+      : confirm?.type === 'removeEntry'
+        ? {
+            title: t('entries.removeTitle'),
+            message: t('entries.removeMessage', {
+              type: isOutflow(confirm.entry) ? t('entries.outBadge') : t('entries.inBadge'),
+              code: confirm.entry.code,
+              date: formatters.formatDate(confirm.entry.date),
+            }),
+            confirmLabel: t('entries.removeConfirm'),
+            tone: 'danger',
+          }
+        : {
+            title: t('portfolio.resetTitle'),
+            message: t('portfolio.resetMessage'),
+            confirmLabel: t('portfolio.resetConfirm'),
+            tone: 'primary',
+          };
 
   const hasRows = filteredRows.length > 0;
   const isEmptyPortfolio = positions.length === 0;
 
   return (
-    <div className={styles.page} data-view-id="portfolio.page" data-view-name={t('portfolio.title')}>
+    <div className={styles.page}>
       <PageHeader
-        viewId="portfolio.header"
         eyebrow={t('portfolio.eyebrow')}
         title={t('portfolio.title')}
         description={t('portfolio.subtitle', { currency: baseCode })}
@@ -211,28 +291,28 @@ export default function PortfolioView() {
             <Button variant="secondary" icon="download" onClick={handleExport}>
               {t('portfolio.export')}
             </Button>
-            <Button icon="plus" onClick={() => openPosition(null)}>
-              {t('portfolio.add')}
+            <Button variant="secondary" icon="minus" onClick={() => openEntry({ type: 'out' })}>
+              {t('portfolio.addOut')}
+            </Button>
+            <Button icon="plus" onClick={() => openEntry({ type: 'in' })}>
+              {t('portfolio.addIn')}
             </Button>
           </>
         }
       />
 
-      <div className={styles.stats} data-view-id="portfolio.stats">
+      <div className={styles.stats}>
         <StatCard
-          viewId="portfolio.stat.value"
           label={t('portfolio.totalValue')}
           value={isReady ? formatters.formatMoney(totalValue, baseCode) : '—'}
           hint={t('dashboard.baseLine', { currency: baseCode })}
         />
         <StatCard
-          viewId="portfolio.stat.cost"
           label={t('portfolio.totalCost')}
           value={isReady ? formatters.formatMoney(totalCost, baseCode) : '—'}
           hint={t('portfolio.costHint')}
         />
         <StatCard
-          viewId="portfolio.stat.pnl"
           label={t('portfolio.pnl')}
           value={
             isReady ? (
@@ -248,15 +328,14 @@ export default function PortfolioView() {
           hint={t('portfolio.positions')}
         />
         <StatCard
-          viewId="portfolio.stat.positions"
           label={t('portfolio.positions')}
           value={formatters.formatNumber(positionsCount)}
-          hint={`${visibleRows.length} / ${filteredRows.length}`}
+          hint={t('entries.count', { count: entriesCount })}
         />
       </div>
 
-      <section className={styles.board} data-view-id="portfolio.board">
-        <div className={styles.toolbar} data-view-id="portfolio.toolbar">
+      <section className={styles.board}>
+        <div className={styles.toolbar}>
           <div className={styles.searchWrap}>
             <span className={styles.searchIcon} aria-hidden="true">
               <Icon name="search" size={16} />
@@ -321,7 +400,7 @@ export default function PortfolioView() {
         </div>
 
         {!hasRows ? (
-          <div className={styles.empty} data-view-id="portfolio.empty">
+          <div className={styles.empty}>
             <span className={styles.emptyIcon} aria-hidden="true">
               <Icon name={isEmptyPortfolio ? 'wallet' : 'search'} size={24} />
             </span>
@@ -333,7 +412,7 @@ export default function PortfolioView() {
             </p>
             <div className={styles.emptyActions}>
               {isEmptyPortfolio ? (
-                <Button icon="plus" onClick={() => openPosition(null)}>
+                <Button icon="plus" onClick={() => openEntry({ type: 'in' })}>
                   {t('portfolio.emptyCta')}
                 </Button>
               ) : (
@@ -346,7 +425,7 @@ export default function PortfolioView() {
         ) : (
           <>
             <div className={styles.tableWrap}>
-              <table className={styles.table} data-view-id="portfolio.table">
+              <table className={styles.table}>
                 <thead>
                   <tr>
                     <th scope="col">{t('portfolio.columns.asset')}</th>
@@ -381,8 +460,6 @@ export default function PortfolioView() {
                     return (
                       <tr
                         key={row.id}
-                        data-view-id={`portfolio.position.${row.code}`}
-                        data-view-name={`${row.code} · ${name}`}
                       >
                         <th scope="row" className={styles.assetCell}>
                           <button
@@ -449,11 +526,20 @@ export default function PortfolioView() {
                             <button
                               type="button"
                               className={styles.rowAction}
-                              onClick={() => openPosition(row)}
-                              title={t('common.edit')}
-                              aria-label={`${t('common.edit')} ${row.code}`}
+                              onClick={() => openEntry({ code: row.code, type: 'in' })}
+                              title={t('entries.addInFor', { code: row.code })}
+                              aria-label={t('entries.addInFor', { code: row.code })}
                             >
-                              <Icon name="edit" size={15} />
+                              <Icon name="plus" size={15} />
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.rowAction}
+                              onClick={() => openEntry({ code: row.code, type: 'out' })}
+                              title={t('entries.addOutFor', { code: row.code })}
+                              aria-label={t('entries.addOutFor', { code: row.code })}
+                            >
+                              <Icon name="minus" size={15} />
                             </button>
                             <button
                               type="button"
@@ -475,7 +561,7 @@ export default function PortfolioView() {
 
             <div className={styles.boardFooter}>
               <span className={styles.boardCount}>
-                {t('common.showing', { count: filteredRows.length, total: positions.length })}
+                {t('common.showing', { count: filteredRows.length, total: rows.length })}
               </span>
               <Pagination
                 page={safePage}
@@ -486,6 +572,66 @@ export default function PortfolioView() {
             </div>
           </>
         )}
+      </section>
+
+      <section className={styles.history}>
+        <header className={styles.historyHead}>
+          <div>
+            <h2 className={styles.historyTitle}>
+              <Icon name="list" size={17} />
+              {t('entries.historyTitle')}
+            </h2>
+            <p className={styles.historySubtitle}>{t('entries.historySubtitle')}</p>
+          </div>
+          <div className={styles.historyControls}>
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>{t('entries.filterLabel')}</span>
+              <span className={styles.selectWrap}>
+                <select
+                  className={styles.select}
+                  value={historyQuery}
+                  onChange={(event) => {
+                    setHistoryQuery(event.target.value);
+                    setHistoryPage(1);
+                  }}
+                  aria-label={t('entries.filterLabel')}
+                >
+                  <option value="all">{t('entries.allAssets')}</option>
+                  {historyCurrencies.map((code) => (
+                    <option key={code} value={code}>
+                      {code}
+                    </option>
+                  ))}
+                </select>
+                <Icon name="chevronDown" size={14} className={styles.selectIcon} />
+              </span>
+            </label>
+            <Button variant="secondary" icon="download" onClick={handleExportHistory}>
+              {t('entries.exportHistory')}
+            </Button>
+          </div>
+        </header>
+
+        <EntriesTable
+          entries={visibleHistory}
+          showCode
+          onRemove={(entry) => setConfirm({ type: 'removeEntry', entry })}
+          empty={t('entries.historyEmpty')}
+        />
+
+        {historyEntries.length > historyPageSize ? (
+          <div className={styles.historyFooter}>
+            <span className={styles.boardCount}>
+              {t('common.showing', { count: visibleHistory.length, total: historyEntries.length })}
+            </span>
+            <Pagination
+              page={safeHistoryPage}
+              pageCount={historyPageCount}
+              onChange={setHistoryPage}
+              label={t('entries.historyTitle')}
+            />
+          </div>
+        ) : null}
       </section>
 
       <ConfirmDialog

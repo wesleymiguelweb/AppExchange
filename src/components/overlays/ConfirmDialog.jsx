@@ -23,7 +23,6 @@ export default function ConfirmDialog({
       title={title ?? t('confirm.title')}
       eyebrow={t('confirm.title')}
       size="sm"
-      viewId="confirm.modal"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useI18n } from '../../i18n/useI18n.js';
 import { usePortfolio } from '../../context/PortfolioContext.jsx';
 import { useMarketData } from '../../context/MarketDataContext.jsx';
-import { useInspector } from '../../context/InspectorContext.jsx';
 import { useUI } from '../../context/UIContext.jsx';
 import { findRoute, routeHash, ROUTES, SECONDARY_ROUTES } from '../../constants/routes.js';
 import { cx } from '../../utils/cx.js';
@@ -19,7 +18,7 @@ function Brand() {
   const { t } = useI18n();
 
   return (
-    <a className={styles.brand} href={routeHash('dashboard')} data-view-id="app.brand">
+    <a className={styles.brand} href={routeHash('dashboard')}>
       <span className={styles.brandMark} aria-hidden="true">
         H
       </span>
@@ -42,8 +41,6 @@ function NavLink({ route, active, onNavigate }) {
       className={cx(styles.navLink, active && styles.navLinkActive)}
       aria-current={active ? 'page' : undefined}
       onClick={onNavigate}
-      data-view-id={`app.nav.${route.id}`}
-      data-view-name={t(route.labelKey)}
     >
       <span className={styles.navIcon} aria-hidden="true">
         <Icon name={route.icon} size={18} />
@@ -68,10 +65,10 @@ function Sidebar({ routeId, onNavigate }) {
   const { t, formatters } = useI18n();
   const { totalValue, totalPnl, pnlPercent, isReady } = usePortfolio();
   const { baseCode } = useMarketData();
-  const { openPosition } = useUI();
+  const { openEntry } = useUI();
 
   return (
-    <aside className={styles.sidebar} data-view-id="app.sidebar" data-view-name="Sidebar">
+    <aside className={styles.sidebar}>
       <div className={styles.sidebarTop}>
         <Brand />
 
@@ -99,7 +96,7 @@ function Sidebar({ routeId, onNavigate }) {
       </div>
 
       <div className={styles.sidebarBottom}>
-        <section className={styles.wallet} data-view-id="app.sidebar.wallet">
+        <section className={styles.wallet}>
           <div className={styles.walletHead}>
             <span className={styles.walletLabel}>{t('dashboard.balance')}</span>
             <span className={styles.walletBase}>{baseCode}</span>
@@ -119,14 +116,14 @@ function Sidebar({ routeId, onNavigate }) {
             icon="plus"
             fullWidth
             className={styles.walletAction}
-            onClick={() => openPosition(null)}
+            onClick={() => openEntry(null)}
           >
             {t('dashboard.addPosition')}
           </Button>
         </section>
 
         <div className={styles.sidebarFooter}>
-          <span className={styles.version}>HERMES · v2.0</span>
+          <span className={styles.version}>HERMES · v3.0</span>
           <span>{t('markets.source')}</span>
         </div>
       </div>
@@ -142,19 +139,17 @@ Sidebar.propTypes = {
 function Topbar({ routeId, theme, onToggleTheme, onOpenMenu }) {
   const { t } = useI18n();
   const { baseCode } = useMarketData();
-  const { enabled, toggle } = useInspector();
   const { openSearch, navigate } = useUI();
   const current = findRoute(routeId);
 
   return (
-    <header className={styles.topbar} data-view-id="app.topbar" data-view-name="Topbar">
+    <header className={styles.topbar}>
       <div className={styles.topbarLeft}>
         <button
           type="button"
           className={styles.menuButton}
           onClick={onOpenMenu}
           aria-label={t('topbar.openMenu')}
-          data-inspector-ui
         >
           <Icon name="menu" size={19} />
         </button>
@@ -193,18 +188,6 @@ function Topbar({ routeId, theme, onToggleTheme, onOpenMenu }) {
         >
           <Icon name="globe" size={15} />
           <span>{baseCode}</span>
-        </button>
-
-        <button
-          type="button"
-          className={cx(styles.iconButton, enabled && styles.iconButtonActive)}
-          onClick={toggle}
-          aria-pressed={enabled}
-          aria-label={enabled ? t('topbar.inspectorOn') : t('topbar.inspectorOff')}
-          title={t('inspector.toggle')}
-          data-inspector-ui
-        >
-          <Icon name="inspect" size={18} />
         </button>
 
         <button
@@ -275,7 +258,6 @@ export default function AppShell({ routeId, theme, onToggleTheme, children }) {
           className={styles.backdrop}
           onClick={closeMenu}
           aria-label={t('topbar.closeMenu')}
-          data-inspector-ui
         />
       ) : null}
 
@@ -287,7 +269,7 @@ export default function AppShell({ routeId, theme, onToggleTheme, children }) {
           onOpenMenu={() => setMenuOpen(true)}
         />
 
-        <main id="conteudo" className={styles.main} tabIndex={-1} data-view-id="app.content">
+        <main id="conteudo" className={styles.main} tabIndex={-1}>
           {children}
 
           <footer className={styles.footer}>

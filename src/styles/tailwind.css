@@ -1,28 +1,29 @@
 /*
  * Tailwind v4 — adoção incremental.
  *
- * O preflight é intencionalmente omitido: o projeto já possui um reset e
- * dezenas de CSS Modules. Importamos o tema e as utilities em camadas para que
- * os componentes novos possam usar utilitários sem alterar o legado.
+ * O preflight completo continua omitido: o projeto já possui um reset em
+ * `global.css` + `styles/tailwind.css` (camada `base`). Importamos o tema e as
+ * utilities em camadas para que os componentes novos possam usar utilitários
+ * sem alterar o legado em CSS Modules.
  *
- * Boas práticas aplicadas:
- *  - tokens semânticos expostos via @theme inline (nenhuma cor solta);
- *  - componentes repetidos (glass, liquid border, tilt) em @layer components;
- *  - utilitários apenas para composição; CSS Modules continua dono do legado;
- *  - movimento reduzido respeitado com motion-safe / motion-reduce.
+ * A ordem `project → theme → base → utilities` é declarada aqui, junto dos
+ * imports: é essa declaração que cria a tabela de camadas antes de o Tailwind
+ * injetar a dele (`@layer properties`). Declarar a ordem em outro arquivo que
+ * importe o Tailwind depois quebra os utilitários (foi a causa do layout dos
+ * menus cair).
  */
-@layer theme, base, components, utilities;
+@layer project, theme, base, utilities;
 
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 
 /*
  * Preflight omitido, então o botão nativo ainda traz `buttonface`, borda 3D e
- * padding do user-agent. Os CSS Modules vencem esta camada por não estarem em
- * @layer; os componentes novos, feitos só com utilitários, partem do zero.
+ * padding do user-agent. `:where(...)` zera a especificidade: utilitários e
+ * CSS Modules vencem sem precisar de camada.
  */
 @layer base {
-  button {
+  :where(button) {
     padding: 0;
     border: 0;
     background: none;

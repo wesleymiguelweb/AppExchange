@@ -119,12 +119,6 @@ const PATHS = {
     </>
   ),
   moon: <path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z" />,
-  inspect: (
-    <>
-      <path d="m8 8-4 4 4 4M16 8l4 4-4 4" />
-      <path d="M13.5 5 10.5 19" />
-    </>
-  ),
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   bell: (
     <>

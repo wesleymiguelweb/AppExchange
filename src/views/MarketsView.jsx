@@ -4,7 +4,6 @@ import { useDebouncedValue } from '../hooks/useDebouncedValue.js';
 import { useMarketData } from '../context/MarketDataContext.jsx';
 import { useMarketSeries } from '../hooks/useMarketSeries.js';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
-import { useInspector } from '../context/InspectorContext.jsx';
 import { useUI } from '../context/UIContext.jsx';
 import { describeError } from '../utils/errorMessages.js';
 import { cx } from '../utils/cx.js';
@@ -52,8 +51,7 @@ export default function MarketsView() {
     retryRates,
   } = useMarketData();
   const { hasPosition, getPosition } = usePortfolio();
-  const { enable, selectView } = useInspector();
-  const { openAsset, openPosition } = useUI();
+  const { openAsset, openEntry } = useUI();
 
   const [query, setQuery] = useState('');
   const [sortId, setSortId] = useState('code');
@@ -122,39 +120,21 @@ export default function MarketsView() {
   const loadError = currenciesError ?? (rates ? null : ratesError);
   const errorInfo = describeError(loadError);
 
-  function inspect(code) {
-    enable();
-    selectView(view === 'grid' ? `market.card.${code}` : `market.row.${code}`);
-  }
-
   function handleAdd(code) {
-    const position = getPosition(code);
-    openPosition(position ?? { code });
+    openEntry({ code });
   }
 
   function renderActions(item, compact = false) {
-    const position = getPosition(item.code);
     return (
       <div className={cx(styles.itemActions, compact && styles.itemActionsCompact)}>
         <button
           type="button"
-          className={styles.inspectAction}
-          onClick={() => inspect(item.code)}
-          title={t('markets.inspect')}
-          aria-label={`${t('markets.inspect')}: ${item.code}`}
-          data-inspector-ui
-        >
-          <Icon name="inspect" size={15} />
-          <span>{t('common.inspect')}</span>
-        </button>
-        <button
-          type="button"
           className={styles.iconAction}
           onClick={() => handleAdd(item.code)}
-          title={position ? t('common.edit') : t('markets.add')}
-          aria-label={`${position ? t('common.edit') : t('markets.add')}: ${item.code}`}
+          title={t('markets.add')}
+          aria-label={`${t('markets.add')}: ${item.code}`}
         >
-          <Icon name={position ? 'check' : 'plus'} size={16} />
+          <Icon name="plus" size={16} />
         </button>
         <button
           type="button"
@@ -170,9 +150,8 @@ export default function MarketsView() {
   }
 
   return (
-    <div className={styles.page} data-view-id="markets.page" data-view-name={t('markets.title')}>
+    <div className={styles.page}>
       <PageHeader
-        viewId="markets.header"
         eyebrow={t('markets.eyebrow')}
         title={t('markets.title')}
         description={t('markets.subtitle')}
@@ -190,7 +169,7 @@ export default function MarketsView() {
         }
       />
 
-      <div className={styles.metaBar} data-view-id="markets.meta">
+      <div className={styles.metaBar}>
         <span className={styles.metaItem}>
           <Icon name="globe" size={15} />
           {t('markets.baseLine', { base: baseCode, count: items.length })}
@@ -207,7 +186,7 @@ export default function MarketsView() {
         </span>
       </div>
 
-      <div className={styles.toolbar} data-view-id="markets.toolbar">
+      <div className={styles.toolbar}>
         <div className={styles.searchWrap}>
           <span className={styles.searchIcon} aria-hidden="true">
             <Icon name="search" size={16} />
@@ -258,11 +237,6 @@ export default function MarketsView() {
         </div>
       </div>
 
-      <p className={styles.inspectHint}>
-        <Icon name="inspect" size={14} />
-        {t('markets.inspectHint')}
-      </p>
-
       {isLoading ? (
         <div className={styles.grid} aria-busy="true">
           {Array.from({ length: 8 }, (_, index) => (
@@ -282,7 +256,7 @@ export default function MarketsView() {
           retryLabel={t('common.retry')}
         />
       ) : items.length === 0 ? (
-        <div className={styles.empty} data-view-id="markets.empty">
+        <div className={styles.empty}>
           <span className={styles.emptyIcon} aria-hidden="true">
             <Icon name="search" size={24} />
           </span>
@@ -293,7 +267,7 @@ export default function MarketsView() {
           </Button>
         </div>
       ) : view === 'grid' ? (
-        <div className={styles.grid} data-view-id="markets.grid">
+        <div className={styles.grid}>
           {visibleItems.map((item) => {
             const position = getPosition(item.code);
             const inverse = Number.isFinite(item.rate) && item.rate > 0 ? 1 / item.rate : null;
@@ -305,8 +279,6 @@ export default function MarketsView() {
                 max={6}
                 lift={4}
                 className={styles.card}
-                data-view-id={`market.card.${item.code}`}
-                data-view-name={`${item.code} · ${item.name}`}
               >
                 <div className={styles.cardHead}>
                   <button
@@ -324,16 +296,6 @@ export default function MarketsView() {
                         <Icon name="check" size={11} />
                       </span>
                     ) : null}
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.inspectButton}
-                    onClick={() => inspect(item.code)}
-                    title={t('markets.inspect')}
-                    aria-label={`${t('markets.inspect')}: ${item.code}`}
-                    data-inspector-ui
-                  >
-                    <Icon name="inspect" size={16} />
                   </button>
                 </div>
 
@@ -371,7 +333,7 @@ export default function MarketsView() {
           })}
         </div>
       ) : (
-        <div className={styles.listBoard} data-view-id="markets.list">
+        <div className={styles.listBoard}>
           <table className={styles.table}>
             <thead>
               <tr>
@@ -394,8 +356,6 @@ export default function MarketsView() {
               {visibleItems.map((item) => (
                 <tr
                   key={item.code}
-                  data-view-id={`market.row.${item.code}`}
-                  data-view-name={`${item.code} · ${item.name}`}
                 >
                   <th scope="row" className={styles.assetCell}>
                     <button

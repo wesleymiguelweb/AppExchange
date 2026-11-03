@@ -1,20 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/useI18n.js';
 import { useMarketData } from '../../context/MarketDataContext.jsx';
-import { useInspector } from '../../context/InspectorContext.jsx';
 import { useUI } from '../../context/UIContext.jsx';
 import { FONT_OPTIONS } from '../../constants/fonts.js';
 import { cx } from '../../utils/cx.js';
 import Icon from '../ui/Icon.jsx';
 
 /**
- * Menu do sistema: tema, tipografia, inspetor e atalhos de navegação.
+ * Menu do sistema: tema, tipografia e atalhos de navegação.
  * Pensado para uso rápido no topbar, sem substituir a página de Ajustes.
  */
 export default function SystemMenu() {
   const { t } = useI18n();
   const { baseCode } = useMarketData();
-  const { enabled, toggle, openFinder } = useInspector();
   const { theme, setTheme, font, setFont, navigate } = useUI();
 
   const [open, setOpen] = useState(false);
@@ -57,7 +55,6 @@ export default function SystemMenu() {
         aria-haspopup="dialog"
         aria-label={t('topbar.profile')}
         title={t('systemMenu.title')}
-        data-inspector-ui
         className={cx(
           'grid size-9 place-items-center rounded-full bg-[linear-gradient(140deg,var(--brand-strong),var(--brand))] text-[11.5px] font-bold tracking-[0.02em] text-white shadow-[0_0_0_2px_var(--bg),0_0_0_3px_var(--line-strong)] transition-transform hover:scale-105',
           open && 'ring-2 ring-brand ring-offset-2 ring-offset-[var(--bg)]',
@@ -147,42 +144,6 @@ export default function SystemMenu() {
                 );
               })}
             </div>
-          </div>
-
-          <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-3">
-            <div className="min-w-0">
-              <p className="text-[11px] font-semibold text-ink">{t('systemMenu.inspector')}</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setOpen(false);
-                  openFinder();
-                }}
-                className="text-[10px] font-medium text-brand hover:underline"
-              >
-                {t('systemMenu.finder')}
-              </button>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={enabled}
-              aria-label={t('systemMenu.inspector')}
-              onClick={toggle}
-              className={cx(
-                'relative h-[23px] w-10 shrink-0 rounded-full border transition-colors',
-                enabled ? 'border-brand bg-brand' : 'border-line-strong bg-panel-3',
-              )}
-            >
-              <span
-                className={cx(
-                  'absolute left-[3px] top-[3px] size-[15px] rounded-full transition-transform',
-                  enabled
-                    ? 'translate-x-[17px] bg-brand-contrast'
-                    : 'bg-ink shadow-[0_1px_3px_rgba(0,0,0,0.3)]',
-                )}
-              />
-            </button>
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-1.5 border-t border-line pt-3">

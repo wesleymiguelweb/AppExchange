@@ -21,9 +21,7 @@ export default function Modal({
   eyebrow,
   size = 'md',
   footer,
-  viewId,
   initialFocusRef,
-  ignoreInspector = false,
   children,
 }) {
   const dialogRef = useRef(null);
@@ -108,9 +106,6 @@ export default function Modal({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        data-view-id={viewId}
-        data-view-name={title}
-        data-inspector-ui={ignoreInspector ? '' : undefined}
       >
         <header className={styles.header}>
           <div className={styles.heading}>
@@ -125,7 +120,6 @@ export default function Modal({
             className={styles.close}
             onClick={onClose}
             aria-label={t('common.closeDialog')}
-            data-inspector-ui
           >
             <Icon name="close" size={18} />
           </button>
@@ -148,8 +142,6 @@ Modal.propTypes = {
   eyebrow: PropTypes.node,
   size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
   footer: PropTypes.node,
-  viewId: PropTypes.string,
   initialFocusRef: PropTypes.shape({ current: PropTypes.any }),
-  ignoreInspector: PropTypes.bool,
   children: PropTypes.node.isRequired,
 };

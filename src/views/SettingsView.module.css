@@ -513,16 +513,6 @@
   border-top: 1px solid var(--line);
 }
 
-.inspectorActions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--line);
-}
-
 .kbd {
   display: inline-flex;
   align-items: center;

@@ -1,13 +1,9 @@
 import PropTypes from 'prop-types';
 import styles from './PageHeader.module.css';
 
-export default function PageHeader({ eyebrow, title, description, actions, viewId }) {
+export default function PageHeader({ eyebrow, title, description, actions }) {
   return (
-    <header
-      className={styles.header}
-      data-view-id={viewId}
-      data-view-name={typeof title === 'string' ? title : undefined}
-    >
+    <header className={styles.header}>
       <div className={styles.text}>
         {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
         <h1 className={styles.title}>{title}</h1>
@@ -23,5 +19,4 @@ PageHeader.propTypes = {
   title: PropTypes.node.isRequired,
   description: PropTypes.node,
   actions: PropTypes.node,
-  viewId: PropTypes.string,
 };

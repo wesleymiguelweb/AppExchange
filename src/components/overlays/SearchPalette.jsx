@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/useI18n.js';
 import { useMarketData } from '../../context/MarketDataContext.jsx';
-import { useInspector } from '../../context/InspectorContext.jsx';
 import { useUI } from '../../context/UIContext.jsx';
 import { ROUTES, SECONDARY_ROUTES } from '../../constants/routes.js';
 import { cx } from '../../utils/cx.js';
@@ -23,8 +22,7 @@ function normalize(value) {
 export default function SearchPalette() {
   const { t, formatters } = useI18n();
   const { currencies, baseCode, rates } = useMarketData();
-  const { enabled: inspectorEnabled, toggle: toggleInspector, openFinder } = useInspector();
-  const { searchOpen, closeSearch, navigate, openAsset, openPosition, toggleTheme } = useUI();
+  const { searchOpen, closeSearch, navigate, openAsset, openEntry, toggleTheme } = useUI();
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef(null);
@@ -93,23 +91,7 @@ export default function SearchPalette() {
         icon: 'plus',
         label: t('search.addPosition'),
         description: t('portfolio.eyebrow'),
-        run: () => openPosition(null),
-      },
-      {
-        id: 'action-inspector',
-        type: 'action',
-        icon: 'inspect',
-        label: inspectorEnabled ? t('settings.disableInspector') : t('settings.enableInspector'),
-        description: t('inspector.shortcut'),
-        run: toggleInspector,
-      },
-      {
-        id: 'action-finder',
-        type: 'action',
-        icon: 'search',
-        label: t('inspector.finder'),
-        description: t('inspector.title'),
-        run: openFinder,
+        run: () => openEntry(null),
       },
       {
         id: 'action-theme',
@@ -132,12 +114,9 @@ export default function SearchPalette() {
     baseCode,
     rates,
     formatters,
-    inspectorEnabled,
     navigate,
     openAsset,
-    openPosition,
-    openFinder,
-    toggleInspector,
+    openEntry,
     toggleTheme,
     t,
   ]);
@@ -173,7 +152,6 @@ export default function SearchPalette() {
       title={t('search.title')}
       subtitle={t('search.hint')}
       size="md"
-      ignoreInspector
       initialFocusRef={inputRef}
     >
       <div className={styles.searchBar}>

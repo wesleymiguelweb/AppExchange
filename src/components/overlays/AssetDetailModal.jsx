@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useI18n } from '../../i18n/useI18n.js';
 import { useMarketData } from '../../context/MarketDataContext.jsx';
@@ -6,26 +6,38 @@ import { usePortfolio } from '../../context/PortfolioContext.jsx';
 import { useMarketSeries } from '../../hooks/useMarketSeries.js';
 import { useUI } from '../../context/UIContext.jsx';
 import { describeError } from '../../utils/errorMessages.js';
+import { sortEntriesDesc } from '../../utils/entries.js';
 import Button from '../ui/Button.jsx';
 import ChangeBadge from '../ui/ChangeBadge.jsx';
 import CurrencyBadge from '../ui/CurrencyBadge.jsx';
 import Icon from '../ui/Icon.jsx';
 import Modal from '../ui/Modal.jsx';
+import ConfirmDialog from './ConfirmDialog.jsx';
 import RateChart from '../chart/RateChart.jsx';
+import EntriesTable from '../portfolio/EntriesTable.jsx';
 import styles from './AssetDetailModal.module.css';
 
 export default function AssetDetailModal({ code, onClose }) {
   const { t, formatters } = useI18n();
   const { baseCode, rates, rateDate, currencyName } = useMarketData();
-  const { rows, getPosition } = usePortfolio();
-  const { openPosition, openTrade } = useUI();
+  const { rows, getPosition, getPortfolio, removeEntry } = usePortfolio();
+  const { openEntry, openTrade } = useUI();
+  const [confirmRemove, setConfirmRemove] = useState(null);
 
   const series = useMarketSeries(baseCode, code ? [code] : [], 30);
   const isBase = code === baseCode;
   const rate = isBase ? 1 : rates?.[code];
   const points = code ? series.seriesByCode?.[code]?.points ?? [] : [];
   const row = rows.find((item) => item.code === code);
-  const position = getPosition(code);
+  const activePosition = getPosition(code);
+  const rawPosition = getPortfolio(code);
+  const entries = useMemo(
+    () =>
+      code
+        ? sortEntriesDesc(rawPosition?.entries ?? []).map((entry) => ({ ...entry, code }))
+        : [],
+    [code, rawPosition],
+  );
 
   const bounds = useMemo(() => {
     if (points.length === 0) return null;
@@ -45,9 +57,9 @@ export default function AssetDetailModal({ code, onClose }) {
   const name = code ? currencyName(code, code) : '';
   const errorInfo = describeError(series.error);
 
-  function handlePosition() {
+  function handleEntry(type) {
     onClose();
-    openPosition(position ?? { code });
+    openEntry({ code, type });
   }
 
   function handleTrade() {
@@ -56,6 +68,7 @@ export default function AssetDetailModal({ code, onClose }) {
   }
 
   return (
+    <>
     <Modal
       open={Boolean(code)}
       onClose={onClose}
@@ -63,7 +76,6 @@ export default function AssetDetailModal({ code, onClose }) {
       title={t('asset.title', { code: code ?? '', name })}
       subtitle={t('asset.subtitle', { base: baseCode })}
       size="lg"
-      viewId="asset.modal"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
@@ -72,8 +84,11 @@ export default function AssetDetailModal({ code, onClose }) {
           <Button variant="secondary" icon="swap" onClick={handleTrade}>
             {t('asset.trade')}
           </Button>
-          <Button icon={position ? 'edit' : 'plus'} onClick={handlePosition}>
-            {position ? t('asset.edit') : t('asset.add')}
+          <Button variant="secondary" icon="minus" onClick={() => handleEntry('out')}>
+            {t('portfolio.addOut')}
+          </Button>
+          <Button icon="plus" onClick={() => handleEntry('in')}>
+            {t('portfolio.addIn')}
           </Button>
         </>
       }
@@ -122,12 +137,12 @@ export default function AssetDetailModal({ code, onClose }) {
         </div>
       </div>
 
-      {position ? (
+      {entries.length > 0 ? (
         <div className={styles.positionCard}>
           <div className={styles.positionHead}>
             <span className={styles.positionTitle}>
               <Icon name="wallet" size={16} />
-              {t('asset.inPortfolio', { quantity: formatters.formatQuantity(position.quantity) })}
+              {t('asset.inPortfolio', { quantity: formatters.formatQuantity(activePosition?.quantity ?? 0) })}
             </span>
             {Number.isFinite(row?.pnlPercent) ? <ChangeBadge value={row.pnlPercent} size="sm" /> : null}
           </div>
@@ -142,7 +157,7 @@ export default function AssetDetailModal({ code, onClose }) {
             </div>
             <div>
               <dt>{t('portfolio.columns.avgCost')}</dt>
-              <dd>{formatters.formatMoney(position.avgCost, 'BRL')}</dd>
+              <dd>{Number.isFinite(row?.avgCost) ? formatters.formatMoney(row.avgCost, 'BRL') : '—'}</dd>
             </div>
           </dl>
         </div>
@@ -178,7 +193,41 @@ export default function AssetDetailModal({ code, onClose }) {
           {t('asset.avg')} {formatters.formatRate(bounds.avg)}
         </p>
       ) : null}
+
+      <div className={styles.historyHead}>
+        <p className={styles.chartTitle}>{t('entries.historyTitle')}</p>
+        <span className={styles.historyCount}>
+          {t('entries.count', { count: entries.length })}
+        </span>
+      </div>
+
+      <EntriesTable
+        entries={entries}
+        onRemove={(entry) => setConfirmRemove(entry)}
+        empty={t('entries.historyEmpty')}
+      />
     </Modal>
+
+    <ConfirmDialog
+      open={Boolean(confirmRemove)}
+      title={t('entries.removeTitle')}
+      message={
+        confirmRemove
+          ? t('entries.removeMessage', {
+              type: confirmRemove.type === 'out' ? t('entries.outBadge') : t('entries.inBadge'),
+              code: confirmRemove.code,
+              date: formatters.formatDate(confirmRemove.date),
+            })
+          : undefined
+      }
+      confirmLabel={t('entries.removeConfirm')}
+      tone="danger"
+      onConfirm={() => {
+        if (confirmRemove) removeEntry(confirmRemove.code, confirmRemove.id);
+      }}
+      onClose={() => setConfirmRemove(null)}
+    />
+    </>
   );
 }
 

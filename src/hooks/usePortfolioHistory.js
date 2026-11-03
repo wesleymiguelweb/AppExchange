@@ -2,23 +2,25 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getTimeSeriesForSymbols } from '../services/frankfurterApi.js';
 import { isAbortError } from '../services/http.js';
 import { getPeriodRange } from '../utils/dates.js';
-import { buildPortfolioSeries } from '../utils/portfolio.js';
+import { quantityBefore } from '../utils/entries.js';
+import { buildPortfolioSeries, buildSeriesMap } from '../utils/portfolio.js';
 
 const EMPTY = { ratesByDate: null, range: null, isLoading: false, error: null };
 
 /**
  * Histórico da carteira: busca uma única série multi-símbolos e recalcula o
  * valor dia a dia no cliente. Alterar quantidades não refaz a requisição.
+ *
+ * Retorna também a variação de cada moeda no período e a série de retorno da
+ * carteira (considerando a variação de preço das posições que já existiam no
+ * início da janela), usadas pelos painéis do dashboard.
  */
 export function usePortfolioHistory(positions, baseCode, days = 30) {
   const [state, setState] = useState(EMPTY);
   const [attempt, setAttempt] = useState(0);
 
   const positionsKey = useMemo(
-    () =>
-      (positions ?? [])
-        .map((position) => `${position.id}:${position.code}:${position.quantity}`)
-        .join('|'),
+    () => (positions ?? []).map((position) => `${position.id}:${position.code}`).join('|'),
     [positions],
   );
 
@@ -70,12 +72,25 @@ export function usePortfolioHistory(positions, baseCode, days = 30) {
     return () => controller.abort();
   }, [baseCode, symbolsKey, days, attempt]);
 
-  const points = useMemo(() => {
-    if (!state.ratesByDate) return [];
-    return buildPortfolioSeries(state.ratesByDate, positions, baseCode);
-  }, [state.ratesByDate, positions, baseCode, positionsKey]);
+  const { points, seriesByCode, rangeStart } = useMemo(() => {
+    if (!state.ratesByDate) {
+      return { points: [], seriesByCode: {}, rangeStart: state.range?.start ?? null };
+    }
+
+    const start = state.range?.start ?? null;
+    const withOpening = (positions ?? []).map((position) => ({
+      ...position,
+      quantityAtStart: start ? quantityBefore(position.entries, start) : 0,
+    }));
+
+    return {
+      points: buildPortfolioSeries(state.ratesByDate, withOpening, baseCode),
+      seriesByCode: buildSeriesMap(state.ratesByDate, symbolsKey ? symbolsKey.split(',') : []),
+      rangeStart: start,
+    };
+  }, [state.ratesByDate, state.range, positions, baseCode, symbolsKey, positionsKey]);
 
   const retry = useCallback(() => setAttempt((value) => value + 1), []);
 
-  return { ...state, points, retry };
+  return { ...state, points, seriesByCode, rangeStart, retry };
 }

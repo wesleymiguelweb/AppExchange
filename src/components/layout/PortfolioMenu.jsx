@@ -17,7 +17,7 @@ export default function PortfolioMenu() {
   const { t, formatters } = useI18n();
   const { baseCode } = useMarketData();
   const { rows, totalValue, totalPnl, pnlPercent, positionsCount, isReady } = usePortfolio();
-  const { navigate, openAsset, openPosition, openTrade } = useUI();
+  const { navigate, openAsset, openEntry, openTrade } = useUI();
 
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
@@ -91,7 +91,6 @@ export default function PortfolioMenu() {
         aria-haspopup="dialog"
         aria-label={t('walletMenu.title')}
         title={t('walletMenu.title')}
-        data-inspector-ui
         className="group flex h-[38px] items-center gap-2 rounded-[10px] border border-line bg-transparent px-2.5 text-muted transition-colors duration-150 hover:bg-[var(--hover-bg)] hover:text-ink"
       >
         <span className="grid size-[22px] place-items-center rounded-md bg-brand-soft text-brand">
@@ -204,7 +203,7 @@ export default function PortfolioMenu() {
           <div className="mt-3 grid grid-cols-2 gap-2 border-t border-line pt-3">
             <button
               type="button"
-              onClick={() => run(() => openPosition(null))}
+              onClick={() => run(() => openEntry(null))}
               className="flex h-9 items-center justify-center gap-1.5 rounded-lg bg-brand text-[11.5px] font-semibold text-brand-contrast transition-transform hover:-translate-y-px"
             >
               <Icon name="plus" size={14} />

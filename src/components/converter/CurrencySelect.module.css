@@ -24,6 +24,17 @@
   color: var(--ink-45);
 }
 
+/*
+ * Ao abrir, o select nativo pinta o menu com a cor de fundo do próprio campo.
+ * Sem esta camada o popup caía no branco padrão do navegador e as opções
+ * herdavam texto claro — ilegíveis no tema escuro.
+ */
+.select:focus,
+.select:open {
+  border-radius: var(--radius-sm);
+  background-color: var(--panel-2);
+}
+
 .select:focus-visible {
   outline-offset: 4px;
 }

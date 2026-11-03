@@ -1,7 +1,7 @@
 {
   "name": "hermes-currency",
   "private": true,
-  "version": "1.0.0",
+  "version": "3.0.0",
   "type": "module",
   "description": "Conversor de moedas e análise histórica de câmbio com dados de referência do Banco Central Europeu (Frankfurter).",
   "engines": {

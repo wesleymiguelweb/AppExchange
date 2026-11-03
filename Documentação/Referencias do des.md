@@ -1,4 +1,3 @@
-# Evidências de código
 
 Trechos reais do projeto, organizados pelos tópicos do trabalho. Todos os
 arquivos estão em `src/`. Capturas em `docs/evidence/`.
@@ -45,42 +44,56 @@ RateChart.propTypes = {
 
 ---
 
-## 2. Lifting State Up
+## 2. Lifting State Up e contexto
 
-`src/App.jsx:22-36` — o `App` guarda valor, par e período. Filhos não têm
-estado duplicado: recebem valor + callback e devolvem eventos.
+`src/App.jsx` centraliza o par de moedas, a busca global e os modais de ativo e
+movimentação. Os dados de mercado e a carteira ficam em providers próprios para
+que qualquer view compartilhe a mesma fonte de verdade.
 
 ```jsx
 export default function App() {
-  const { t, locale, setLocale, formatters, locales } = useI18n();
-
-  // Estado compartilhado (Lifting State Up): o App é a única fonte de verdade do
-  // valor, do par de moedas e do período. Conversor, gráfico e tabela recebem
-  // esses dados por props e devolvem eventos.
-  const [amountRaw, setAmountRaw] = useState('1000');
-  const [fromCode, setFromCode] = useState('BRL');
-  const [toCode, setToCode] = useState('USD');
-  const [periodId, setPeriodId] = useState(DEFAULT_PERIOD_ID);
-
-  const converterRef = useRef(null);
-  const period = findPeriod(periodId);
-
-  const currenciesState = useCurrencies();
-  const exchange = useExchangeRate(fromCode, toCode);
-  const history = useHistoricalRates(fromCode, toCode, period);
+  return (
+    <MarketDataProvider>
+      <PortfolioProvider>
+        <PanelsProvider>
+          <ToastProvider>
+            <AppContent />
+          </ToastProvider>
+        </PanelsProvider>
+      </PortfolioProvider>
+    </MarketDataProvider>
+  );
+}
 ```
 
-O valor convertido é **derivado**, não armazenado:
+```jsx
+const [pair, setPair] = useState({ from: 'BRL', to: 'USD' });
+const [entryModal, setEntryModal] = useState({ open: false, initial: null });
+
+const openEntry = useCallback((initial) => {
+  setSearchOpen(false);
+  setEntryModal({ open: true, initial: initial ?? null });
+}, []);
+```
+
+O valor convertido e o custo da carteira são **derivados**, não armazenados:
 
 ```jsx
 const parsedAmount = useMemo(() => parseAmount(amountRaw, locale), [amountRaw, locale]);
-const amountError = parsedAmount.errorKey
-  ? t(`converter.amountErrors.${parsedAmount.errorKey}`)
-  : null;
 const convertedValue =
-  parsedAmount.value !== null && Number.isFinite(exchange.rate)
-    ? parsedAmount.value * exchange.rate
+  parsedAmount.value !== null && Number.isFinite(rate)
+    ? parsedAmount.value * rate
     : null;
+```
+
+```js
+const summary = summarizeEntries(position.entries);
+return {
+  ...position,
+  quantity: summary.quantity,
+  cost: summary.cost,
+  avgCost: summary.avgCost,
+};
 ```
 
 ---
@@ -411,7 +424,7 @@ export function downloadCsv(filename, content) {
 }
 ```
 
-Uso em `App.jsx` — as linhas exportadas são exatamente as visíveis:
+Uso em `TradeView.jsx` — as linhas exportadas são exatamente as visíveis:
 
 ```jsx
 onExport={() => onExport(visibleRows)}   // RatesCard.jsx
@@ -419,17 +432,34 @@ onExport={() => onExport(visibleRows)}   // RatesCard.jsx
 
 ```jsx
 const columns = [
-  { label: t('csv.headers.date'), value: () => exchange.date ?? todayIso() },
+  { label: t('csv.headers.date'), value: () => quoteDate ?? todayIso() },
   { label: t('csv.headers.base'), value: () => fromCode },
   { label: t('csv.headers.target'), value: (row) => row.code },
   { label: t('csv.headers.name'), value: (row) => formatters.currencyName(row.code, row.name) },
   { label: t('csv.headers.rate'), value: (row) => String(row.rate) },
   { label: t('csv.headers.converted'), value: (row) => (amount === null ? '' : (amount * row.rate).toFixed(2)) },
 ];
+
+downloadCsv(buildCsvFilename(`hermes-${fromCode}-${toCode}`, quoteDate ?? todayIso()), toCsv(columns, rowsToExport));
 ```
 
-Arquivo gerado no teste: `hermes-USD-IDR-2026-11-02.csv`, com 29 linhas +
-cabeçalho.
+A carteira tem dois exports próprios (`PortfolioView.jsx`):
+
+```jsx
+// Posições filtradas/ordenadas → hermes-carteira-{BASE}-{data}.csv
+{ label: t('portfolio.columns.asset'), value: (row) => row.code },
+{ label: t('portfolio.columns.quantity'), value: (row) => String(row.quantity) },
+{ label: t('portfolio.columns.avgCost'), value: (row) => String(row.avgCost) },
+{ label: t('portfolio.columns.value'), value: (row) => String(row.value) },
+
+// Histórico de entradas e saídas → hermes-movimentacoes-{data}.csv
+{ label: t('entries.columns.type'), value: (entry) => (isOutflow(entry) ? t('entries.outBadge') : t('entries.inBadge')) },
+{ label: t('entries.columns.total'), value: (entry) => String(entry.quantity * entry.price + (isOutflow(entry) ? -(entry.fee ?? 0) : (entry.fee ?? 0))) },
+```
+
+Arquivos gerados nos testes: `hermes-USD-IDR-2026-11-02.csv` (cotações),
+`hermes-carteira-BRL-2026-11-03.csv` (posições) e
+`hermes-movimentacoes-2026-11-03.csv` (histórico).
 
 ---
 

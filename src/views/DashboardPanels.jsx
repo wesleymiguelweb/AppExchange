@@ -22,8 +22,12 @@ const PERIOD_OPTIONS = [
 
 function periodChange(points) {
   if (!Array.isArray(points) || points.length < 2) return { amount: null, percent: null };
-  const first = points[0].value;
+  // Quando a carteira só teve entradas/saídas dentro da janela, os primeiros
+  // pontos valem zero. Usar o primeiro dia com posição evita "retorno"
+  // infinito e mostra a evolução a partir do primeiro aporte.
+  const firstPoint = points.find((point) => point.value > 0) ?? points[0];
   const last = points[points.length - 1].value;
+  const first = firstPoint.value;
   return {
     amount: last - first,
     percent: first > 0 ? ((last - first) / first) * 100 : null,
@@ -58,7 +62,6 @@ export function SummaryPanel({
 
   return (
     <Panel
-      viewId="dashboard.summary"
       icon="wallet"
       title={t('panels.summary.label')}
       subtitle={t('dashboard.summarySubtitle')}
@@ -149,7 +152,7 @@ SummaryPanel.propTypes = {
   onAdd: PropTypes.func.isRequired,
 };
 
-export function PerformancePanel({ baseCode, points, rows, isLoading, totalPnl }) {
+export function PerformancePanel({ baseCode, points, rows, isLoading, period, totalPnl }) {
   const { t, formatters } = useI18n();
   const change = periodChange(points);
   const ranked = [...rows]
@@ -161,11 +164,10 @@ export function PerformancePanel({ baseCode, points, rows, isLoading, totalPnl }
 
   return (
     <Panel
-      viewId="dashboard.performance"
       icon="trend"
       title={t('panels.performance.label')}
       subtitle={t('dashboard.performanceSubtitle')}
-      actions={<span className={styles.chip}>30D</span>}
+      actions={<span className={styles.chip}>{period ?? 30}D</span>}
     >
       {rows.length === 0 ? (
         <Empty>{t('dashboard.performance.noData')}</Empty>
@@ -227,6 +229,7 @@ PerformancePanel.propTypes = {
   points: PropTypes.array.isRequired,
   rows: PropTypes.array.isRequired,
   isLoading: PropTypes.bool,
+  period: PropTypes.number,
   totalPnl: PropTypes.number.isRequired,
 };
 
@@ -256,7 +259,6 @@ export function AllocationPanel({ baseCode, rows, totalValue, isLoading }) {
 
   return (
     <Panel
-      viewId="dashboard.allocation"
       icon="pie"
       title={t('panels.allocation.label')}
       subtitle={t('panels.allocation.description')}
@@ -294,7 +296,6 @@ export function PositionsPanel({ baseCode, rows, isReady, onAdd }) {
 
   return (
     <Panel
-      viewId="dashboard.positions"
       icon="wallet"
       title={t('panels.positions.label')}
       subtitle={t('panels.positions.description')}
@@ -356,7 +357,6 @@ export function WatchlistPanel({ baseCode, codes, rates, series, isLoading }) {
 
   return (
     <Panel
-      viewId="dashboard.watchlist"
       icon="market"
       title={t('panels.watchlist.label')}
       subtitle={t('markets.baseLine', { base: baseCode, count: codes.length })}
@@ -439,7 +439,6 @@ export function InsightsPanel({ baseCode, rows, codes, series }) {
   if (rows.length === 0 && ranked.length === 0) {
     return (
       <Panel
-        viewId="dashboard.insights"
         icon="sparkles"
         title={t('panels.insights.label')}
         subtitle={t('panels.insights.description')}
@@ -453,7 +452,6 @@ export function InsightsPanel({ baseCode, rows, codes, series }) {
 
   return (
     <Panel
-      viewId="dashboard.insights"
       icon="sparkles"
       title={t('panels.insights.label')}
       subtitle={t('panels.insights.description')}

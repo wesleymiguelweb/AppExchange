@@ -78,3 +78,139 @@
   line-height: 1.5;
   color: var(--faint);
 }
+
+.moneyField .currencySelect {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---------- Tipo (entrada/saída) ---------- */
+
+.typeSwitch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-2);
+}
+
+.typeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--muted);
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    box-shadow var(--transition);
+}
+
+.typeButton:hover {
+  color: var(--text);
+}
+
+.typeButton[data-tone='in'].typeButtonActive {
+  background: var(--success-soft);
+  color: var(--success-strong);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--success) 35%, transparent);
+}
+
+.typeButton[data-tone='out'].typeButtonActive {
+  background: var(--danger-soft);
+  color: var(--danger-strong);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger) 35%, transparent);
+}
+
+/* ---------- Linhas de campos ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.suffix {
+  padding-right: 12px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+.useMarket {
+  flex-shrink: 0;
+  padding: 0 12px 0 4px;
+  border-left: 1px solid var(--line);
+  margin-left: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--brand);
+  white-space: nowrap;
+}
+
+.useMarket:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Resumo ---------- */
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-2);
+}
+
+.summary > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.summaryLabel {
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.inValue,
+.outValue {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.inValue {
+  color: var(--success-strong);
+}
+
+.outValue {
+  color: var(--danger-strong);
+}
+
+.marketLine {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--faint);
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -4,7 +4,6 @@ import { useI18n } from '../i18n/useI18n.js';
 import { useMarketData } from '../context/MarketDataContext.jsx';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
 import { usePanels } from '../context/PanelsContext.jsx';
-import { useInspector } from '../context/InspectorContext.jsx';
 import { useToastContext } from '../context/ToastContext.jsx';
 import { useUI } from '../context/UIContext.jsx';
 import { FONT_OPTIONS } from '../constants/fonts.js';
@@ -56,7 +55,6 @@ export default function SettingsView({ theme, onThemeChange }) {
     cyclePanelSize,
     resetPanels,
   } = usePanels();
-  const { enabled: inspectorEnabled, toggle: toggleInspector, openFinder } = useInspector();
   const { showToast } = useToastContext();
   const { navigate, font, setFont } = useUI();
 
@@ -104,9 +102,8 @@ export default function SettingsView({ theme, onThemeChange }) {
         };
 
   return (
-    <div className={styles.page} data-view-id="settings.page" data-view-name={t('settings.title')}>
+    <div className={styles.page}>
       <PageHeader
-        viewId="settings.header"
         eyebrow={t('settings.eyebrow')}
         title={t('settings.title')}
         description={t('settings.subtitle')}
@@ -114,7 +111,6 @@ export default function SettingsView({ theme, onThemeChange }) {
 
       <div className={styles.grid}>
         <Panel
-          viewId="settings.appearance"
           icon="sun"
           title={t('settings.appearance')}
           subtitle={t('settings.themeHint')}
@@ -169,7 +165,6 @@ export default function SettingsView({ theme, onThemeChange }) {
         </Panel>
 
         <Panel
-          viewId="settings.language"
           icon="globe"
           title={t('settings.language')}
           subtitle={t('settings.languageHint')}
@@ -227,7 +222,6 @@ export default function SettingsView({ theme, onThemeChange }) {
         </Panel>
 
         <Panel
-          viewId="settings.typography"
           icon="sparkles"
           title={t('settings.typography')}
           subtitle={t('settings.fontHint')}
@@ -266,7 +260,6 @@ export default function SettingsView({ theme, onThemeChange }) {
         </Panel>
 
         <Panel
-          viewId="settings.portfolio"
           icon="wallet"
           title={t('settings.portfolio')}
           subtitle={t('portfolio.subtitle', { currency: baseCode })}
@@ -311,7 +304,6 @@ export default function SettingsView({ theme, onThemeChange }) {
         </Panel>
 
         <Panel
-          viewId="settings.dashboard"
           icon="panel"
           title={t('settings.dashboard')}
           subtitle={t('settings.resetPanelsHint')}
@@ -372,34 +364,6 @@ export default function SettingsView({ theme, onThemeChange }) {
         </Panel>
 
         <Panel
-          viewId="settings.inspector"
-          icon="inspect"
-          title={t('settings.inspector')}
-          subtitle={t('settings.inspectorHint')}
-          className={styles.panel}
-        >
-          <div className={styles.settingRow}>
-            <div className={styles.settingText}>
-              <strong>{inspectorEnabled ? t('settings.disableInspector') : t('settings.enableInspector')}</strong>
-              <p>{t('settings.shortcut', { keys: t('inspector.shortcut') })}</p>
-            </div>
-            <Switch
-              checked={inspectorEnabled}
-              onChange={toggleInspector}
-              label={t('settings.inspector')}
-            />
-          </div>
-
-          <div className={styles.inspectorActions}>
-            <Button variant="secondary" size="sm" icon="search" onClick={openFinder}>
-              {t('inspector.finder')}
-            </Button>
-            <code className={styles.kbd}>Ctrl + Shift + E</code>
-          </div>
-        </Panel>
-
-        <Panel
-          viewId="settings.about"
           icon="info"
           title={t('settings.about')}
           subtitle={t('settings.dataSourceHint')}

@@ -17,8 +17,6 @@ export default function Panel({
   footer,
   className,
   bodyClassName,
-  viewId,
-  viewName,
   children,
 }) {
   const titleId = useId();
@@ -28,8 +26,6 @@ export default function Panel({
       id={id}
       className={cx(styles.panel, className)}
       aria-labelledby={titleId}
-      data-view-id={viewId}
-      data-view-name={viewName ?? (typeof title === 'string' ? title : undefined)}
     >
       <header className={styles.header}>
         <div className={styles.heading}>
@@ -63,7 +59,5 @@ Panel.propTypes = {
   footer: PropTypes.node,
   className: PropTypes.string,
   bodyClassName: PropTypes.string,
-  viewId: PropTypes.string,
-  viewName: PropTypes.string,
   children: PropTypes.node.isRequired,
 };

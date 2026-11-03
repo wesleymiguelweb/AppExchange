@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useI18n } from '../i18n/useI18n.js';
-import { useInspector } from '../context/InspectorContext.jsx';
 import { useUI } from '../context/UIContext.jsx';
 import Button from '../components/ui/Button.jsx';
 import Icon from '../components/ui/Icon.jsx';
@@ -12,21 +11,17 @@ const MAP_KEYS = ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8'];
 
 const SHORTCUTS = [
   { id: 'search', keys: ['Ctrl', 'K'], alt: ['/'] },
-  { id: 'inspector', keys: ['Ctrl', 'Shift', 'E'] },
   { id: 'close', keys: ['Esc'] },
-  { id: 'copy', keys: ['Ctrl', 'C'] },
 ];
 
 export default function SupportView() {
   const { t } = useI18n();
-  const { openFinder, enabled, toggle } = useInspector();
-  const { openSearch, openPosition, navigate } = useUI();
+  const { openSearch, openEntry, navigate } = useUI();
   const [openFaq, setOpenFaq] = useState('q1');
 
   return (
-    <div className={styles.page} data-view-id="support.page" data-view-name={t('support.title')}>
+    <div className={styles.page}>
       <PageHeader
-        viewId="support.header"
         eyebrow={t('support.eyebrow')}
         title={t('support.title')}
         description={t('support.subtitle')}
@@ -35,7 +30,7 @@ export default function SupportView() {
             <Button variant="secondary" icon="search" onClick={openSearch}>
               {t('search.openPalette')}
             </Button>
-            <Button icon="plus" onClick={() => openPosition(null)}>
+            <Button icon="plus" onClick={() => openEntry(null)}>
               {t('dashboard.addPosition')}
             </Button>
           </>
@@ -43,7 +38,7 @@ export default function SupportView() {
       />
 
       <div className={styles.layout}>
-        <section className={styles.card} data-view-id="support.faq">
+        <section className={styles.card}>
           <header className={styles.cardHead}>
             <span className={styles.cardIcon} aria-hidden="true">
               <Icon name="help" size={17} />
@@ -91,14 +86,14 @@ export default function SupportView() {
         </section>
 
         <div className={styles.aside}>
-          <section className={styles.card} data-view-id="support.shortcuts">
+          <section className={styles.card}>
             <header className={styles.cardHead}>
               <span className={styles.cardIcon} aria-hidden="true">
-                <Icon name="inspect" size={17} />
+                <Icon name="panel" size={17} />
               </span>
               <div>
                 <h2 className={styles.cardTitle}>{t('support.shortcutsTitle')}</h2>
-                <p className={styles.cardSubtitle}>{t('inspector.subtitle')}</p>
+                <p className={styles.cardSubtitle}>{t('support.shortcutsHint')}</p>
               </div>
             </header>
 
@@ -125,23 +120,23 @@ export default function SupportView() {
             </ul>
 
             <div className={styles.shortcutActions}>
-              <Button variant="secondary" size="sm" icon="inspect" onClick={toggle}>
-                {enabled ? t('settings.disableInspector') : t('settings.enableInspector')}
+              <Button variant="secondary" size="sm" icon="search" onClick={openSearch}>
+                {t('search.openPalette')}
               </Button>
-              <Button variant="secondary" size="sm" icon="search" onClick={openFinder}>
-                {t('inspector.finder')}
+              <Button variant="secondary" size="sm" icon="wallet" onClick={() => navigate('portfolio')}>
+                {t('nav.portfolio')}
               </Button>
             </div>
           </section>
 
-          <section className={styles.card} data-view-id="support.about">
+          <section className={styles.card}>
             <header className={styles.cardHead}>
               <span className={styles.cardIcon} aria-hidden="true">
                 <Icon name="info" size={17} />
               </span>
               <div>
                 <h2 className={styles.cardTitle}>{t('support.aboutTitle')}</h2>
-                <p className={styles.cardSubtitle}>HERMES · 2.0</p>
+                <p className={styles.cardSubtitle}>HERMES · 3.0</p>
               </div>
             </header>
 
@@ -165,7 +160,7 @@ export default function SupportView() {
         </div>
       </div>
 
-      <section className={styles.card} data-view-id="support.map">
+      <section className={styles.card}>
         <header className={styles.cardHead}>
           <span className={styles.cardIcon} aria-hidden="true">
             <Icon name="panel" size={17} />
@@ -187,7 +182,7 @@ export default function SupportView() {
             </thead>
             <tbody>
               {MAP_KEYS.map((key) => (
-                <tr key={key} data-view-id={`support.map.${key}`}>
+                <tr key={key}>
                   <td className={styles.mapReference}>{t(`support.mapRows.${key}.reference`)}</td>
                   <td>
                     <span className={styles.mapDestination}>

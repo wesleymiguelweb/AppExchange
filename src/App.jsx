@@ -8,14 +8,11 @@ import { MarketDataProvider, useMarketData } from './context/MarketDataContext.j
 import { PortfolioProvider } from './context/PortfolioContext.jsx';
 import { PanelsProvider } from './context/PanelsContext.jsx';
 import { ToastProvider, useToastContext } from './context/ToastContext.jsx';
-import { InspectorProvider, useInspector } from './context/InspectorContext.jsx';
 import { UIContext } from './context/UIContext.jsx';
 import AppShell from './components/layout/AppShell.jsx';
 import AssetDetailModal from './components/overlays/AssetDetailModal.jsx';
-import InspectorOverlay from './components/overlays/InspectorOverlay.jsx';
 import PositionModal from './components/overlays/PositionModal.jsx';
 import SearchPalette from './components/overlays/SearchPalette.jsx';
-import ViewFinder from './components/overlays/ViewFinder.jsx';
 import DashboardView from './views/DashboardView.jsx';
 import MarketsView from './views/MarketsView.jsx';
 import PortfolioView from './views/PortfolioView.jsx';
@@ -38,12 +35,11 @@ function AppContent() {
   const { font, setFont } = useFont();
   const { route, navigate } = useHashRoute();
   const { baseCode } = useMarketData();
-  const { toggle: toggleInspector } = useInspector();
   const { showToast } = useToastContext();
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [assetCode, setAssetCode] = useState(null);
-  const [positionModal, setPositionModal] = useState({ open: false, initial: null });
+  const [entryModal, setEntryModal] = useState({ open: false, initial: null });
   const [pair, setPair] = useState({ from: 'BRL', to: 'USD' });
 
   const previousBase = useRef(baseCode);
@@ -71,13 +67,13 @@ function AppContent() {
 
   const closeAsset = useCallback(() => setAssetCode(null), []);
 
-  const openPosition = useCallback((initial) => {
+  const openEntry = useCallback((initial) => {
     setSearchOpen(false);
-    setPositionModal({ open: true, initial: initial ?? null });
+    setEntryModal({ open: true, initial: initial ?? null });
   }, []);
 
-  const closePosition = useCallback(() => {
-    setPositionModal((current) => ({ ...current, open: false }));
+  const closeEntry = useCallback(() => {
+    setEntryModal((current) => ({ ...current, open: false }));
   }, []);
 
   const openTrade = useCallback(
@@ -101,17 +97,11 @@ function AppContent() {
     showToast(t(nextTheme === 'dark' ? 'toast.themeDark' : 'toast.themeLight'));
   }, [theme, setTheme, showToast, t]);
 
-  // Atalhos globais: busca (Ctrl+K ou /), inspetor (Ctrl+Shift+E).
+  // Atalhos globais: busca (Ctrl+K ou /).
   useEffect(() => {
     function handleKeyDown(event) {
       const modifier = event.ctrlKey || event.metaKey;
       const key = event.key.toLowerCase();
-
-      if (modifier && event.shiftKey && key === 'e') {
-        event.preventDefault();
-        toggleInspector();
-        return;
-      }
 
       if ((modifier && key === 'k') || (event.key === '/' && !isTypingTarget(event.target))) {
         event.preventDefault();
@@ -121,7 +111,7 @@ function AppContent() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [toggleInspector]);
+  }, []);
 
   const ui = useMemo(
     () => ({
@@ -133,7 +123,7 @@ function AppContent() {
       navigate,
       openAsset,
       closeAsset,
-      openPosition,
+      openEntry,
       openTrade,
       toggleTheme: handleToggleTheme,
       setTheme: handleThemeChange,
@@ -148,7 +138,7 @@ function AppContent() {
       navigate,
       openAsset,
       closeAsset,
-      openPosition,
+      openEntry,
       openTrade,
       handleToggleTheme,
       handleThemeChange,
@@ -180,14 +170,12 @@ function AppContent() {
         {renderRoute()}
       </AppShell>
 
-      <InspectorOverlay />
-      <ViewFinder />
       <SearchPalette />
       <AssetDetailModal code={assetCode} onClose={closeAsset} />
       <PositionModal
-        open={positionModal.open}
-        initial={positionModal.initial}
-        onClose={closePosition}
+        open={entryModal.open}
+        initial={entryModal.initial}
+        onClose={closeEntry}
       />
     </UIContext.Provider>
   );
@@ -199,9 +187,7 @@ export default function App() {
       <PortfolioProvider>
         <PanelsProvider>
           <ToastProvider>
-            <InspectorProvider>
-              <AppContent />
-            </InspectorProvider>
+            <AppContent />
           </ToastProvider>
         </PanelsProvider>
       </PortfolioProvider>

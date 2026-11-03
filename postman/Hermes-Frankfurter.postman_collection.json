@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "8f2b1a7c-4d3e-4f6a-9c1b-hermes000001",
+    "_postman_id": "8f2b1a7c-4d3e-4f6a-9c1b-2f7d3a5e6b01",
     "name": "Hermes · Frankfurter API",
     "description": "Coleção de referência para os três endpoints públicos usados pelo Hermes.\n\nA Frankfurter não exige chave de API. As variáveis `base`, `quote`, `start` e `end` podem ser alteradas em **Collection Variables** antes de executar.\n\nOrdem sugerida: Listar moedas → Últimas taxas → Série histórica → Erro esperado.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"

@@ -1,5 +1,14 @@
-/* Ordem das camadas: resets ficam abaixo dos componentes e utilitários. */
-@layer theme, base, components, utilities;
+/*
+ * Sem ordem explícita de camadas de propósito.
+ *
+ * O Tailwind v4 é importado dentro de camadas (`@import 'tailwindcss/...' layer(...)`)
+ * e os CSS Modules ficam fora delas. Ao declarar `@layer theme, base, components,
+ * utilities` aqui, o Tailwind injetava `@layer properties` (o fallback das
+ * custom properties) DEPOIS dessa declaração, o que fazia os utilitários perderem
+ * para o fallback — e praticamente todo o layout utilitário (menu do sistema,
+ * menu da carteira, fundo líquido) caía. Os resets usam `:where(...)` para
+ * manter especificidade zero sem precisar de camada.
+ */
 
 *,
 *::before,
@@ -26,42 +35,68 @@ body {
 }
 
 /*
- * Resets em @layer base para que os utilitários do Tailwind possam vencer por
- * camada. Os CSS Modules continuam sem camada e, portanto, continuam mandando
- * no legado.
+ * Resets globais.
+ *
+ * Sem `@layer`: a ordem de camadas é decidida pelo @import do Tailwind em
+ * `styles/tailwind.css` (project → theme → base → utilities). Os resets usam
+ * `:where(...)`, que tem especificidade zero, então qualquer classe — CSS Module
+ * ou utilitário — vence sem depender da posição do import.
  */
-@layer base {
-  h1,
-  h2,
-  h3,
-  p,
-  figure {
-    margin: 0;
-  }
+:where(h1, h2, h3, p, figure) {
+  margin: 0;
+}
 
-  ul,
-  ol {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
+:where(ul, ol) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
-  button,
-  input,
-  select,
-  output,
-  textarea {
-    font: inherit;
-    color: inherit;
-  }
+:where(button, input, select, output, textarea) {
+  font: inherit;
+  color: inherit;
+}
 
-  button {
-    cursor: pointer;
-  }
+/*
+ * Selects nativos: o popup é desenhado pelo navegador, então as opções
+ * precisam de cor explícita. Sem isso, o texto branco do tema escuro herdava
+ * sobre o branco padrão do menu e ficava ilegível.
+ */
+:where(select) {
+  color-scheme: dark;
+  accent-color: var(--brand);
+}
 
-  a {
-    color: inherit;
-  }
+[data-theme='light'] :where(select) {
+  color-scheme: light;
+}
+
+:where(select) option,
+:where(select) optgroup {
+  background-color: var(--panel-2);
+  color: var(--text);
+}
+
+:where(select) option:hover {
+  background-color: var(--brand-soft);
+  color: var(--text);
+}
+
+:where(select) option:checked {
+  background-color: var(--brand);
+  color: var(--brand-contrast);
+}
+
+:where(select) option:disabled {
+  color: var(--faint);
+}
+
+:where(button) {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
 }
 
 :focus-visible {

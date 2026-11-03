@@ -187,9 +187,8 @@ export default function TradeView({ pair, onPairChange }) {
   );
 
   return (
-    <div className={styles.page} data-view-id="trade.page" data-view-name={t('trade.title')}>
+    <div className={styles.page}>
       <PageHeader
-        viewId="trade.header"
         eyebrow={t('trade.eyebrow')}
         title={t('trade.title')}
         description={t('trade.subtitle')}
@@ -201,7 +200,7 @@ export default function TradeView({ pair, onPairChange }) {
         }
       />
 
-      <section className={styles.quick} data-view-id="trade.quick">
+      <section className={styles.quick}>
         <span className={styles.quickLabel}>
           <Icon name="sparkles" size={15} />
           {t('trade.quick')}
@@ -227,7 +226,7 @@ export default function TradeView({ pair, onPairChange }) {
         <span className={styles.quickNote}>{t('trade.notes')}</span>
       </section>
 
-      <div className={styles.converter} data-view-id="trade.converter">
+      <div className={styles.converter}>
         <ConverterCard
           amountRaw={amountRaw}
           onAmountChange={handleAmountChange}
@@ -251,7 +250,7 @@ export default function TradeView({ pair, onPairChange }) {
         />
       </div>
 
-      <div className={styles.chart} data-view-id="trade.chart">
+      <div className={styles.chart}>
         <ChartCard
           fromCode={fromCode}
           toCode={toCode}
@@ -266,7 +265,7 @@ export default function TradeView({ pair, onPairChange }) {
         />
       </div>
 
-      <div className={styles.rates} data-view-id="trade.rates">
+      <div className={styles.rates}>
         <RatesCard
           baseCode={fromCode}
           amount={parsedAmount.value}

@@ -7,7 +7,6 @@ export default function LiquidBackground() {
     <div
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-      data-view-id="app.background"
     >
       <div className="aurora-blob aurora-a" />
       <div className="aurora-blob aurora-b" />

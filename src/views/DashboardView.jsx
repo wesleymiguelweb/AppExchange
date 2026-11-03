@@ -53,7 +53,7 @@ export default function DashboardView() {
     movePanelBy,
     resetPanels,
   } = usePanels();
-  const { openPosition } = useUI();
+  const { openEntry } = useUI();
   const { showToast } = useToastContext();
 
   const [period, setPeriod] = useState(30);
@@ -100,7 +100,7 @@ export default function DashboardView() {
             totalPnl={totalPnl}
             positionsCount={positionsCount}
             isReady={isReady}
-            onAdd={() => openPosition(null)}
+            onAdd={() => openEntry(null)}
           />
         );
       case 'performance':
@@ -110,6 +110,7 @@ export default function DashboardView() {
             points={history.points}
             rows={rows}
             isLoading={history.isLoading}
+            period={period}
             totalPnl={totalPnl}
           />
         );
@@ -128,7 +129,7 @@ export default function DashboardView() {
             baseCode={baseCode}
             rows={rows}
             isReady={isReady}
-            onAdd={() => openPosition(null)}
+            onAdd={() => openEntry(null)}
           />
         );
       case 'watchlist':
@@ -160,7 +161,6 @@ export default function DashboardView() {
   return (
     <div className={styles.page}>
       <PageHeader
-        viewId="dashboard.page"
         eyebrow={t('dashboard.eyebrow')}
         title={`${t(`dashboard.${greetingKey()}`)}!`}
         description={t('dashboard.welcome')}
@@ -176,7 +176,7 @@ export default function DashboardView() {
             >
               {editMode ? t('dashboard.done') : t('dashboard.manage')}
             </Button>
-            <Button icon="plus" onClick={() => openPosition(null)}>
+            <Button icon="plus" onClick={() => openEntry(null)}>
               {t('dashboard.addPosition')}
             </Button>
           </>
@@ -184,7 +184,7 @@ export default function DashboardView() {
       />
 
       {editMode ? (
-        <div className={styles.editBanner} data-view-id="dashboard.edit-mode">
+        <div className={styles.editBanner}>
           <span className={styles.editHint}>
             <Icon name="drag" size={16} />
             {t('dashboard.dragHint')}
@@ -219,7 +219,7 @@ export default function DashboardView() {
       ) : null}
 
       {visiblePanels.length === 0 ? (
-        <div className={styles.emptyState} data-view-id="dashboard.empty">
+        <div className={styles.emptyState}>
           <span className={styles.emptyIcon} aria-hidden="true">
             <Icon name="eyeOff" size={24} />
           </span>

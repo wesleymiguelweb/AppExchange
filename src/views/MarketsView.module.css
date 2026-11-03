@@ -179,19 +179,6 @@
   pointer-events: none;
 }
 
-.inspectHint {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: var(--space-4);
-  font-size: 10.5px;
-  color: var(--faint);
-}
-
-.inspectHint svg {
-  color: var(--brand);
-}
-
 /* ---------- Grid ---------- */
 
 .grid {
@@ -276,29 +263,6 @@
   color: var(--success);
 }
 
-.inspectButton {
-  display: grid;
-  place-items: center;
-  width: 29px;
-  height: 29px;
-  flex-shrink: 0;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: 7px;
-  background: transparent;
-  color: var(--faint);
-  transition:
-    color var(--transition),
-    border-color var(--transition),
-    background-color var(--transition);
-}
-
-.inspectButton:hover {
-  border-color: var(--brand);
-  background: var(--brand-soft);
-  color: var(--brand);
-}
-
 .rateBlock {
   display: flex;
   flex-direction: column;
@@ -375,32 +339,6 @@
   margin-top: var(--space-3);
   padding-top: var(--space-3);
   border-top: 1px solid var(--line);
-}
-
-.inspectAction {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  flex: 1;
-  min-height: 30px;
-  padding: 0 8px;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 10.5px;
-  font-weight: 600;
-  transition:
-    color var(--transition),
-    border-color var(--transition),
-    background-color var(--transition);
-}
-
-.inspectAction:hover {
-  border-color: var(--brand);
-  background: var(--brand-soft);
-  color: var(--brand);
 }
 
 .iconAction {
@@ -560,16 +498,6 @@
 
 .itemActionsCompact {
   gap: 3px;
-}
-
-.itemActionsCompact .inspectAction {
-  flex: 0 0 auto;
-  width: 30px;
-  padding: 0;
-}
-
-.itemActionsCompact .inspectAction span {
-  display: none;
 }
 
 /* ---------- Skeleton / empty ---------- */
@@ -789,10 +717,6 @@
 
   .grid {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .inspectHint {
-    font-size: 10px;
   }
 
   .pagination {

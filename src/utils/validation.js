@@ -29,3 +29,29 @@ export function parseAmount(rawValue, locale = 'pt-BR') {
 export function sanitizeAmountInput(rawValue) {
   return String(rawValue ?? '').replace(/[^\d.,]/g, '').slice(0, 18);
 }
+
+/** Input controlado para números: aceita zero (usado em taxas e formulários). */
+export function sanitizeNumberInput(rawValue) {
+  return String(rawValue ?? '').replace(/[^\d.,-]/g, '').slice(0, 18);
+}
+
+/**
+ * Número maior ou igual a zero, com a mesma convenção de separadores de
+ * `parseAmount`. Usado em campanha (taxa aplicada), impostos e corretagens.
+ */
+export function parseNonNegative(rawValue, locale = 'pt-BR') {
+  const text = String(rawValue ?? '').trim().replace(/\s/g, '');
+  if (!text) return { value: null, errorKey: 'required' };
+
+  const normalized = isLatinCommaLocale(locale)
+    ? text.replace(/\./g, '').replace(',', '.')
+    : text.replace(/,/g, '');
+
+  if (!/^\d*\.?\d+$/.test(normalized)) return { value: null, errorKey: 'invalid' };
+
+  const value = Number(normalized);
+  if (!Number.isFinite(value) || value < 0) return { value: null, errorKey: 'invalid' };
+  if (value > MAX_AMOUNT) return { value: null, errorKey: 'tooLarge' };
+
+  return { value, errorKey: null };
+}
